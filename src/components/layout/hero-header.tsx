@@ -6,15 +6,44 @@ import { UserButton } from "./user-button";
 import { authClient } from "@/lib/auth-client";
 import { Search, ShoppingCart, Store } from "lucide-react";
 import { Input } from "../ui/input";
+import { useQuery } from "@tanstack/react-query";
+import { CartSheet } from "../cart-sheet";
+import { useCart } from "@/hooks/use-cart";
+import { Badge } from "../ui/badge";
+import { useEffect } from "react";
 
 export function Header() {
   const { data: session, isPending } = authClient.useSession();
   const isAuthenticated = !!session?.user && !isPending;
+  const { itemCount, fetchCart } = useCart();
+
+  // Fetch cart data when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchCart();
+    }
+  }, [isAuthenticated, fetchCart]);
+
+  // Check if user has a store
+  const { data: storeData } = useQuery({
+    queryKey: ["user-store"],
+    queryFn: async () => {
+      const response = await fetch("/api/stores/me");
+      if (!response.ok) {
+        throw new Error("Failed to fetch store");
+      }
+      return response.json();
+    },
+    enabled: isAuthenticated,
+  });
+
+  const hasStore = storeData?.hasStore || false;
+  const storeHref = hasStore ? "/seller/dashboard" : "/seller/new";
 
   const handleSearch = undefined; // TODO: implement search
   return (
     <header className="sticky top-0 z-50 w-full bg-background ">
-      <div className="mx-auto max-w-6xl px-6 py-4">
+      <div className="mx-auto container px-6 py-4">
         <div className="flex items-center justify-between w-full gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2">
@@ -43,14 +72,30 @@ export function Header() {
 
           {/* Action */}
           <div className="flex-shrink-0 flex items-center gap-2">
-            <Button size={"icon"} variant={"outline"}>
-              <ShoppingCart />
-            </Button>
+            {isAuthenticated ? (
+              <CartSheet>
+                <Button size="icon" variant="outline" className="relative">
+                  <ShoppingCart className="h-4 w-4" />
+                  {itemCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                    >
+                      {itemCount > 99 ? "99+" : itemCount}
+                    </Badge>
+                  )}
+                </Button>
+              </CartSheet>
+            ) : (
+              <Button size="icon" variant="outline" disabled>
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+            )}
             {isAuthenticated ? (
               <>
-                <Link href="/seller/dashboard">
+                <Link href={storeHref}>
                   <Button variant="outline">
-                    <Store />
+                    <Store className="h-4 w-4 mr-2" />
                     Toko
                   </Button>
                 </Link>

@@ -98,7 +98,7 @@ export const product = pgTable("product", {
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   stock: integer("stock").notNull(),
   image: text("image"),
-  status: text("status").$defaultFn(() => "draft"), // draft, published, inactive
+  status: text("status").$defaultFn(() => "active"), // active, inactive
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
