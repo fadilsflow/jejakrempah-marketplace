@@ -1,7 +1,5 @@
 import HeroSection from "@/components/hero-section";
 
-
-
 export default function Home() {
   return (
     <>
@@ -14,8 +12,8 @@ export default function Home() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl font-light">Produk Terbaru</h2>
-              <p className="text-sm text-muted-foreground font-light">
-                Temukan produk terbaru dari berbagai kategori
+                <p className="text-sm text-muted-foreground font-light">
+                  Temukan produk terbaru dari berbagai kategori
               </p>
             </div>
           </div>
@@ -37,7 +35,6 @@ export default function Home() {
             sortBy="trending"
           />
         </section> */}
-
       </div>
     </>
   );
