@@ -15,6 +15,7 @@ import { updateOrderStatusSchema } from "@/lib/validations";
  * - Buyers can view their own orders
  * - Store owners can view orders containing their products
  */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -115,11 +116,8 @@ export async function GET(
   });
 }
 
-/**
- * PUT /api/orders/[id] - Update order status
- * - Buyers can only cancel or pay for their pending orders
- * - Store owners can update orders to ANY status (pending, paid, shipped, completed, cancelled) without restrictions
- */
+//  PUT /api/orders/[id] - Update order status
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -182,28 +180,6 @@ export async function PUT(
       if (!isBuyer && !isStoreOwner) {
         return createErrorResponse("Unauthorized to update this order", 403);
       }
-
-      // Apply role-based restrictions
-      if (isBuyer) {
-        // Buyers can only cancel or pay for pending orders
-        if (status !== "cancelled" && status !== "paid") {
-          return createErrorResponse(
-            "Buyers can only cancel or pay for orders",
-            403
-          );
-        }
-        if (orderData[0].status !== "pending") {
-          return createErrorResponse("Can only update pending orders", 400);
-        }
-      }
-
-      // Store owners can update orders to ANY status - no restrictions
-      // This allows full control over order management for sellers
-      console.log(
-        `Order status update: User ${user.id} ${
-          isBuyer ? "buyer" : "store owner"
-        } changing order ${id} from ${orderData[0].status} to ${status}`
-      );
 
       // Update order status
       const updatedOrder = await db

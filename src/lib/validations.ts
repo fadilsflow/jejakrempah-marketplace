@@ -20,7 +20,33 @@ export const createStoreSchema = z.object({
   logo: z.string().url("Invalid logo URL").optional(),
 });
 
-export const updateStoreSchema = createStoreSchema.partial();
+export const updateStoreSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Store name is required")
+    .max(100, "Store name too long"),
+  slug: z
+    .string()
+    .min(1, "Store slug is required")
+    .max(50, "Store slug too long")
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens"
+    ),
+  description: z.string().optional(),
+  logo: z.string().url("Invalid logo URL").optional().or(z.literal("")),
+});
+
+/* ======================
+   USER VALIDATIONS
+   ====================== */
+export const updateUserSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name too long"),
+  image: z.string().url("Invalid image URL").optional().or(z.literal("")),
+});
 
 /* ======================
    PRODUCT VALIDATIONS

@@ -235,13 +235,13 @@ export default function SellerDashboardPage() {
                 stats.totalProducts || 0
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               {isLoadingStats ? (
                 <Skeleton className="h-4 w-24" />
               ) : (
                 `${stats.activeProducts || 0} active`
               )}
-            </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -258,13 +258,13 @@ export default function SellerDashboardPage() {
                 stats.totalOrders || 0
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               {isLoadingStats ? (
                 <Skeleton className="h-4 w-24" />
               ) : (
                 `${stats.pendingOrders || 0} pending`
               )}
-            </p>
+            </div>
           </CardContent>
         </Card>
 
