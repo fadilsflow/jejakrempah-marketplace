@@ -1,36 +1,254 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jejaka Rempah Marketplace
 
-## Getting Started
+Proyek marketplace untuk jual beli rempah-rempah dan bumbu dengan fitur lengkap untuk pembeli dan penjual.
 
-First, run the development server:
+## 🚀 Teknologi Yang Digunakan
+
+- **Framework**: Next.js 15 dengan TypeScript
+- **Database**: PostgreSQL dengan Drizzle ORM
+- **Authentication**: Better Auth
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand & TanStack Query
+- **UI Components**: Radix UI + shadcn/ui
+
+## 📋 Prasyarat
+
+Sebelum menjalankan proyek ini, pastikan Anda telah menginstall:
+
+- **Node.js** versi 18 atau lebih tinggi
+- **PostgreSQL** database server
+- **Bun** (opsional, tapi direkomendasikan)
+
+### Menginstall PostgreSQL
+
+#### Windows:
+
+```bash
+# Download dan install PostgreSQL dari:
+# https://www.postgresql.org/download/windows/
+
+# Atau menggunakan Chocolatey:
+choco install postgresql
+```
+
+#### Linux (Ubuntu/Debian):
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
+
+#### macOS:
+
+```bash
+brew install postgresql
+```
+
+## 🛠️ Instalasi dan Setup
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/fadilsflow/jejakrempah-marketplace
+cd jejakrempah-marketplace
+```
+
+### 2. Install Dependencies
+
+```bash
+# Menggunakan Bun (Direkomendasikan)
+bun install
+
+# Atau menggunakan npm
+npm install
+
+# Atau menggunakan yarn
+yarn install
+```
+
+### 3. Setup Environment Variables
+
+#### Windows (Command Prompt):
+
+```cmd
+copy .env.example .env
+```
+
+#### Windows (PowerShell):
+
+```powershell
+Copy-Item .env.example .env
+```
+
+#### Linux/macOS (Bash):
+
+```bash
+cp .env.example .env
+```
+
+### 4. Konfigurasi Database
+
+Edit file `.env` dan pastikan DATABASE_URL sudah benar:
+
+```env
+DATABASE_URL=postgresql://fadil@localhost:5432/jejakrempah-marketplace
+```
+
+### 5. Setup Database Schema
+
+#### Menggunakan Bun:
+
+```bash
+bunx drizzle-kit push
+```
+
+#### Menggunakan npx:
+
+```bash
+npx drizzle-kit push
+```
+
+## 🚀 Menjalankan Proyek
+
+### Development Mode
+
+#### Menggunakan Bun:
+
+```bash
+bun run dev
+```
+
+#### Menggunakan npm:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### Menggunakan yarn:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Aplikasi akan berjalan di [http://localhost:3000](http://localhost:3000)
 
-## Learn More
+### Production Mode
 
-To learn more about Next.js, take a look at the following resources:
+#### Build aplikasi:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Menggunakan Bun
+bun run build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Menggunakan npm
+npm run build
 
-## Deploy on Vercel
+# Menggunakan yarn
+yarn build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Jalankan production server:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Menggunakan Bun
+bun run start
+
+# Menggunakan npm
+npm run start
+
+# Menggunakan yarn
+yarn start
+```
+
+## 📜 Script Yang Tersedia
+
+| Script                            | Deskripsi                       |
+| --------------------------------- | ------------------------------- |
+| `bun run dev` / `npm run dev`     | Jalankan development server     |
+| `bun run build` / `npm run build` | Build aplikasi untuk production |
+| `bun run start` / `npm run start` | Jalankan production server      |
+| `bun run lint` / `npm run lint`   | Jalankan ESLint                 |
+
+## 🗄️ Database Management
+
+### Push Schema ke Database:
+
+```bash
+bunx drizzle-kit push
+```
+
+### Generate Migration:
+
+```bash
+bunx drizzle-kit generate
+```
+
+### Lihat Status Migration:
+
+```bash
+bunx drizzle-kit check
+```
+
+## 🔧 Troubleshooting
+
+### Error: "Can't reach database server"
+
+- Pastikan PostgreSQL service sedang berjalan
+- Periksa DATABASE_URL di file .env
+- Pastikan database `jejakrempah-marketplace` sudah dibuat
+
+### Error: "Port 3000 already in use"
+
+```bash
+# Kill process di port 3000
+# Windows:
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
+# Linux/macOS:
+lsof -ti:3000 | xargs kill -9
+```
+
+### Error: "Module not found"
+
+```bash
+# Hapus node_modules dan install ulang
+rm -rf node_modules
+bun install
+```
+
+## 📁 Struktur Proyek
+
+```
+jejakrempah-marketplace/
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── api/            # API Routes
+│   │   ├── settings/       # Halaman Settings
+│   │   └── ...
+│   ├── components/         # React Components
+│   ├── lib/               # Utilities & Configurations
+│   └── db/                # Database Schema & Config
+├── public/                # Static Assets
+├── .env.example          # Template Environment Variables
+└── README.md             # Dokumentasi Proyek
+```
+
+## 🌟 Fitur Utama
+
+- ✅ **Authentication**: Login/Register dengan Better Auth
+- ✅ **Store Management**: Kelola toko dan produk
+- ✅ **Osrder Management**: Sistem pesanan lengkap
+- ✅ **Address Management**: Kelola alamat pengiriman
+- ✅ **Cart System**: Keranjang belanja
+- ✅ **Payment Integration**: Sistem pembayaran
+- ✅ **Admin Dashboard**: Dashboard untuk penjual
+- ✅ **Responsive Design**: UI yang responsive
+
+## 📞 Support
+
+Jika ada pertanyaan atau masalah, silakan buat issue di repository ini.
+
+---
+
+**Thanks**
