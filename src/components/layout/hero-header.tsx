@@ -10,7 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import { CartSheet } from "../cart-sheet";
 import { useCart } from "@/hooks/use-cart";
 import { Badge } from "../ui/badge";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function Header() {
   const { data: session, isPending } = authClient.useSession();
@@ -40,7 +41,15 @@ export function Header() {
   const hasStore = storeData?.hasStore || false;
   const storeHref = hasStore ? "/seller/dashboard" : "/seller/new";
 
-  const handleSearch = undefined; // TODO: implement search
+  const router = useRouter();
+  const [globalQuery, setGlobalQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (globalQuery.trim()) params.set("q", globalQuery.trim());
+    router.push(`/search?${params.toString()}`);
+  };
   return (
     <header className="sticky top-0 z-50 w-full bg-background ">
       <div className="mx-auto container px-6 py-4">
@@ -57,8 +66,10 @@ export function Header() {
           <div className="flex-1 max-w-md sm:max-w-lg md:max-w-xl">
             <form onSubmit={handleSearch} className="relative">
               <Input
-                placeholder="Cari produk"
+                placeholder="Cari produk atau toko"
                 className="w-full pr-10 bg-background"
+                value={globalQuery}
+                onChange={(e) => setGlobalQuery(e.target.value)}
               />
               <Button
                 type="submit"

@@ -194,14 +194,14 @@ export default function SellerDashboardPage() {
     <div className="container mx-auto py-8 px-6 ">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground">
               Welcome back! Here&apos;s what&apos;s happening with your store.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap ml-auto">
             <Link href="/seller/products/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />

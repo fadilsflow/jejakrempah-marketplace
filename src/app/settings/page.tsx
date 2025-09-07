@@ -13,8 +13,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { AddressDialog } from "@/components/checkout/address-dialog";
 import { authClient } from "@/lib/auth-client";
 import { generateSlug } from "@/lib/client-utils";
@@ -174,7 +189,9 @@ export default function SettingsPage() {
     },
     onError: (error) => {
       console.error("Error updating store:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to update store");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update store"
+      );
     },
   });
 
@@ -241,7 +258,9 @@ export default function SettingsPage() {
     return (
       <div className="container mx-auto py-8 px-6">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Please login to access settings</p>
+          <p className="text-muted-foreground">
+            Please login to access settings
+          </p>
         </div>
       </div>
     );
@@ -267,7 +286,10 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <Form {...userForm}>
-                <form onSubmit={userForm.handleSubmit(handleUpdateUser)} className="space-y-4">
+                <form
+                  onSubmit={userForm.handleSubmit(handleUpdateUser)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={userForm.control}
                     name="name"
@@ -331,11 +353,16 @@ export default function SettingsPage() {
               {isLoadingStore ? (
                 <div className="text-center py-4">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  <p className="text-sm text-muted-foreground mt-2">Loading store...</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Loading store...
+                  </p>
                 </div>
               ) : store ? (
                 <Form {...storeForm}>
-                  <form onSubmit={storeForm.handleSubmit(handleUpdateStore)} className="space-y-4">
+                  <form
+                    onSubmit={storeForm.handleSubmit(handleUpdateStore)}
+                    className="space-y-4"
+                  >
                     <FormField
                       control={storeForm.control}
                       name="name"
@@ -448,7 +475,9 @@ export default function SettingsPage() {
               {isLoadingAddresses ? (
                 <div className="text-center py-4">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  <p className="text-sm text-muted-foreground mt-2">Loading addresses...</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Loading addresses...
+                  </p>
                 </div>
               ) : addresses.length === 0 ? (
                 <div className="text-center py-8">
@@ -457,9 +486,7 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Add a delivery address for your orders.
                   </p>
-                  <Button onClick={handleAddAddress}>
-                    Add Address
-                  </Button>
+                  <Button onClick={handleAddAddress}>Add Address</Button>
                 </div>
               ) : (
                 <>
@@ -470,7 +497,9 @@ export default function SettingsPage() {
                         className="p-4 border rounded-lg space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium">{address.recipientName}</h4>
+                          <h4 className="font-medium">
+                            {address.recipientName}
+                          </h4>
                           {address.isDefault && (
                             <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                               Default
@@ -478,10 +507,13 @@ export default function SettingsPage() {
                           )}
                         </div>
                         {address.phone && (
-                          <p className="text-sm text-muted-foreground">{address.phone}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {address.phone}
+                          </p>
                         )}
                         <p className="text-sm text-muted-foreground">
-                          {address.street}, {address.city}, {address.province} {address.postalCode}
+                          {address.street}, {address.city}, {address.province}{" "}
+                          {address.postalCode}
                         </p>
                         <Button
                           variant="outline"
@@ -493,7 +525,11 @@ export default function SettingsPage() {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" onClick={handleAddAddress} className="w-full">
+                  <Button
+                    variant="outline"
+                    onClick={handleAddAddress}
+                    className="w-full"
+                  >
                     Add New Address
                   </Button>
                 </>
@@ -513,9 +549,13 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Once you delete your account, there is no going back. Please be certain.
+                Once you delete your account, there is no going back. Please be
+                certain.
               </p>
-              <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <Dialog
+                open={showDeleteDialog}
+                onOpenChange={setShowDeleteDialog}
+              >
                 <DialogTrigger asChild>
                   <Button variant="destructive" className="w-full">
                     Delete Account
@@ -525,8 +565,8 @@ export default function SettingsPage() {
                   <DialogHeader>
                     <DialogTitle>Delete Account</DialogTitle>
                     <DialogDescription>
-                      This action cannot be undone. This will permanently delete your account
-                      and remove all your data from our servers.
+                      This action cannot be undone. This will permanently delete
+                      your account and remove all your data from our servers.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
@@ -584,9 +624,9 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8">
         {/* Sidebar */}
-        <div className="w-64 flex-shrink-0">
+        <div className="w-full md:w-64 flex-shrink-0 md:sticky md:top-24">
           <div className="space-y-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -594,10 +634,11 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg transition-colors ${activeTab === tab.id
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                    }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg transition-colors ${
+                    activeTab === tab.id
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
                 >
                   <Icon className="h-5 w-5" />
                   <span className="font-medium">{tab.label}</span>
@@ -608,9 +649,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1">
-          {renderTabContent()}
-        </div>
+        <div className="flex-1 min-w-0">{renderTabContent()}</div>
       </div>
 
       {/* Address Dialog */}

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { store } from "@/db/schema";
-import { eq, like, desc } from "drizzle-orm";
+import { eq, ilike, desc } from "drizzle-orm";
 import {
   withAuth,
   withoutAuth,
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       // Build query conditions
       const conditions = [];
       if (q) {
-        conditions.push(like(store.name, `%${q}%`));
+        conditions.push(ilike(store.name, `%${q}%`));
       }
 
       // Build order by
