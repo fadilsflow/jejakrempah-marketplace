@@ -429,7 +429,7 @@ export default function SellerDashboardPage() {
             </div>
 
             <div className="pt-4 border-t">
-              <Link href="/seller/settings">
+              <Link href="/settings">
                 <Button variant="outline" className="w-full">
                   <Store className="mr-2 h-4 w-4" />
                   Edit Store Settings

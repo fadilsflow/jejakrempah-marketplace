@@ -13,14 +13,14 @@ export default function Home() {
   return (
     <>
       <div className="flex flex-col gap-4 py-10 ">
-        
+
         <section className="flex flex-col gap-4">
           <HeroSection />
         </section>
 
         <section className="flex flex-col container mx-auto px-6">
           <div className="flex items-center justify-between mb-4">
-            <div>
+            <div >
               <h2 className="text-2xl font-light">Produk Terbaru</h2>
               <p className="text-sm text-muted-foreground font-light">
                 Temukan produk terbaru

@@ -4,10 +4,18 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginForm() {
     const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
+
+
+    const { data: session } = authClient.useSession();
+
+    if (session) {
+        redirect("/");
+    }
 
     const signWithGoogle = async () => {
         setLoadingProvider("google");

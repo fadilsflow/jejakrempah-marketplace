@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 export default function HeroSection() {
   return (
     <>
-      <main className="overflow-hidden">
+      <main className="overflow-hidden min-h-screen">
         <section>
           <div className="relative pt-5 ">
             <div className="container mx-auto px-6">
@@ -23,7 +23,7 @@ export default function HeroSection() {
                   </p>
                   <div className="mt-12 flex flex-col items-start justify-start gap-2 md:flex-row">
                     <Button size={"lg"} asChild className="rounded-full">
-                      <Link href="/login" className="flex items-center gap-2">
+                      <Link href="/products" className="flex items-center gap-2">
                         Eksplore Jalur Rempah
                       </Link>
                     </Button>
@@ -34,7 +34,7 @@ export default function HeroSection() {
                 <div className="relative lg:order-last order-first">
                   <div className="relative aspect-[4/3] w-full max-w-lg mx-auto lg:max-w-none">
                     <Image
-                      src="https://app.tegaltourism.com/rempahtour/static/img/landingpage/hero.png"
+                      src="https://res.cloudinary.com/dxurnpbrc/image/upload/v1757251427/jejak-rempah_pamwal.png"
                       alt="Jejak Rempah Nusantara - Traditional Spice Heritage"
                       fill
                       className="object-contain"

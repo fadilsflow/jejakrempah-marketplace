@@ -577,12 +577,12 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto py-8 px-6">
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Settings</h1>
         <p className="text-muted-foreground">
           Manage your account settings and preferences
         </p>
-      </div>
+      </div> */}
 
       <div className="flex gap-8">
         {/* Sidebar */}
@@ -594,7 +594,7 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg transition-colors ${activeTab === tab.id
+                  className={`w-full flex items-center gap-3 px-2 py-2 text-left rounded transition-colors ${activeTab === tab.id
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted"
                     }`}
@@ -608,7 +608,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1">
+        <div className="flex-1 min-h-screen">
           {renderTabContent()}
         </div>
       </div>

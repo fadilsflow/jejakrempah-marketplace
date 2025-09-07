@@ -108,6 +108,35 @@ bunx drizzle-kit push
 npx drizzle-kit push
 ```
 
+### 6. Seed Database dengan Data Test (Opsional)
+
+Untuk mengisi database dengan data test, jalankan seeder:
+
+#### Menggunakan Bun:
+
+```bash
+bun run db:seed
+```
+
+#### Menggunakan npm:
+
+```bash
+npm run db:seed
+```
+
+Seeder akan membuat:
+- **4 User**: 2 penjual, 2 pembeli
+- **2 Toko**: dengan produk lengkap
+- **6 Produk**: rempah-rempah dan bumbu
+- **3 Alamat**: untuk pembeli
+- **2 Keranjang Belanja**: dengan item
+- **3 Pesanan**: dengan status berbeda
+- **2 Pembayaran**: untuk pesanan yang sudah dibayar
+
+**Akun Test:**
+- **Penjual**: `ahmad@example.com`, `siti@example.com`
+- **Pembeli**: `budi@example.com`, `maya@example.com`
+
 ## 🚀 Menjalankan Proyek
 
 ### Development Mode
@@ -167,6 +196,7 @@ yarn start
 | `bun run dev` / `npm run dev`     | Jalankan development server     |
 | `bun run build` / `npm run build` | Build aplikasi untuk production |
 | `bun run start` / `npm run start` | Jalankan production server      |
+| `bun run db:seed` / `npm run db:seed` | Seed database dengan data test |
 | `bun run lint` / `npm run lint`   | Jalankan ESLint                 |
 
 ## 🗄️ Database Management
@@ -238,7 +268,7 @@ jejakrempah-marketplace/
 
 - ✅ **Authentication**: Login/Register dengan Better Auth
 - ✅ **Store Management**: Kelola toko dan produk
-- ✅ **Osrder Management**: Sistem pesanan lengkap
+- ✅ **Order Management**: Sistem pesanan lengkap
 - ✅ **Address Management**: Kelola alamat pengiriman
 - ✅ **Cart System**: Keranjang belanja
 - ✅ **Payment Integration**: Sistem pembayaran
