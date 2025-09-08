@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { product, store } from "@/db/schema";
-import { eq, like, desc, and, gte, lte } from "drizzle-orm";
+import { eq, ilike, desc, and, gte, lte } from "drizzle-orm";
 import {
   withAuth,
   withoutAuth,
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       const conditions = [eq(product.status, "active")];
 
       if (q) {
-        conditions.push(like(product.name, `%${q}%`));
+        conditions.push(ilike(product.name, `%${q}%`));
       }
 
       if (minPrice !== undefined) {
