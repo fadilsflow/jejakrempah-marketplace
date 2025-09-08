@@ -223,13 +223,13 @@ export default function SettingsPage() {
       deleteAccountMutation.mutate();
       setShowDeleteDialog(false);
     } else {
-      toast.error("Please type &apos;YAKIN&apos;  to confirm deletion");
+      toast.error("Please type 'YAKIN'  to confirm deletion");
     }
   };
 
   if (isPending) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -239,7 +239,7 @@ export default function SettingsPage() {
 
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Please login to access settings</p>
         </div>
@@ -504,9 +504,9 @@ export default function SettingsPage() {
 
       case "danger":
         return (
-          <Card className="border-destructive">
+          <Card >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive">
+              <CardTitle className="flex items-center gap-2 text-red-700">
                 <Trash2 className="h-5 w-5" />
                 Danger Zone
               </CardTitle>
@@ -517,7 +517,7 @@ export default function SettingsPage() {
               </p>
               <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <DialogTrigger asChild>
-                  <Button variant="destructive" className="w-full">
+                  <Button className="w-full bg-red-700  text-white hover:bg-red-800 ">
                     Delete Account
                   </Button>
                 </DialogTrigger>
@@ -552,6 +552,7 @@ export default function SettingsPage() {
                     <Button
                       variant="destructive"
                       onClick={handleDeleteAccount}
+                      className=" bg-red-700  text-white hover:bg-red-800"
                       disabled={deleteAccountMutation.isPending}
                     >
                       {deleteAccountMutation.isPending ? (
@@ -576,7 +577,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Settings</h1>
         <p className="text-muted-foreground">
@@ -584,9 +585,9 @@ export default function SettingsPage() {
         </p>
       </div> */}
 
-      <div className="flex gap-8">
+      <div className="md:flex block gap-8">
         {/* Sidebar */}
-        <div className="w-64 flex-shrink-0">
+        <div className="flex-shrink-0 md:w-64 w-full pb-5 mb-5 border-b ">
           <div className="space-y-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;

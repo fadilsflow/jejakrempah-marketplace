@@ -14,6 +14,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Store as StoreIcon } from "lucide-react";
+import Image from "next/image";
 
 type Store = {
   id: string;
@@ -29,7 +30,7 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-8 px-6 md:px-12">
           <div className="space-y-6">
             <div className="h-8 w-40 bg-muted rounded" />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -96,7 +97,7 @@ function SearchContent() {
   const isError = productsQuery.isError || storesQuery.isError;
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Pencarian</h1>
         <p className="text-muted-foreground">
@@ -194,33 +195,48 @@ function SearchContent() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {stores.map((s: Store) => (
-                  <Link key={s.id} href={`/stores/${s.slug}`}>
-                    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
-                      <CardHeader className="pb-3">
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                          <StoreIcon className="h-6 w-6 text-primary" />
+                {stores.map((store: Store) => (
+                  <Link key={store.id} href={`/stores/${store.slug}`}>
+                    <div className="border p-6 rounded-xl  overflow-hidden hover:border-primary transition-shadow cursor-pointer h-full">
+                      <div className="pb-3 ">
+                        <div className="relative flex items-center space-x-3">
+                          {store.logo ? (
+                            <div className="relative h-12 w-12 overflow-hidden rounded-xl">
+                              <Image
+                                fill
+                                src={store.logo}
+                                alt={store.name}
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                              <StoreIcon className="h-6 w-6 text-primary" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-md truncate ">
+                              {store.name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground truncate">
+                              @{store.slug}
+                            </p>
+                          </div>
                         </div>
-                        <div className="mt-3">
-                          <h3 className="font-semibold text-lg truncate">
-                            {s.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground truncate">
-                            @{s.slug}
-                          </p>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        {s.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {s.description}
+                      </div>
+                      <div>
+                        {store.description && (
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                            {store.description}
                           </p>
                         )}
-                        <Button className="w-full mt-4" size="sm">
-                          Kunjungi Toko
-                        </Button>
-                      </CardContent>
-                    </Card>
+                        <div className="justify-end flex">
+                          <Button variant={"outline"} size={"sm"}>
+                            Kunjungi Toko
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </Link>
                 ))}
               </div>

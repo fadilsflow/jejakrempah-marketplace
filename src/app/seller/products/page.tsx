@@ -165,7 +165,7 @@ export default function ProductsPage() {
 
   // Loading skeleton component
   const LoadingSkeleton = () => (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="flex items-center justify-between mb-6">
         <div>
           <Skeleton className="h-8 w-48 mb-2" />
@@ -243,7 +243,7 @@ export default function ProductsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="flex flex-col items-center justify-center py-12">
           <Package className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold mb-2">Gagal memuat produk</h3>
@@ -265,7 +265,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Kelola Produk</h1>
@@ -395,9 +395,8 @@ export default function ProductsPage() {
                   </TableCell>
                   <TableCell>
                     <div
-                      className={`font-medium ${
-                        product.stock <= 5 ? "text-red-600" : ""
-                      }`}
+                      className={`font-medium ${product.stock <= 5 ? "text-red-600" : ""
+                        }`}
                     >
                       {product.stock}
                       {product.stock <= 5 && product.stock > 0 && (

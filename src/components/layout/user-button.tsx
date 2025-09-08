@@ -35,9 +35,9 @@ export function UserButton() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-8 w-8 rounded-full p-0 hover:opacity-80"
+          className="relative h-8 w-8 rounded-md full p-0 hover:opacity-80"
         >
-          <Avatar className="h-8 w-8 rounded-lg">
+          <Avatar className="h-8 w-8 rounded-md">
             {session?.user?.image ? (
               <Image
                 src={session.user.image}

@@ -183,7 +183,7 @@ export default function OrdersPage() {
   // Show loading state while session is loading
   if (isPending) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -194,7 +194,7 @@ export default function OrdersPage() {
   // Don't render anything if not authenticated
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
@@ -204,7 +204,7 @@ export default function OrdersPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="mb-6">
           <Skeleton className="h-10 w-32 mb-4" />
           <Skeleton className="h-8 w-48 mb-2" />
@@ -228,7 +228,7 @@ export default function OrdersPage() {
   );
 
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-6">
         <Button variant="ghost" onClick={() => router.back()} className="mb-4">

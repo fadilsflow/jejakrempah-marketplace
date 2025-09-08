@@ -2,17 +2,20 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Badge } from "./ui/badge";
 
 export default function HeroSection() {
   return (
     <>
-      <main className="overflow-hidden min-h-screen">
+      <main className="overflow-hidden pb-28">
         <section>
           <div className="relative pt-5 ">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-6 md:px-12">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                 {/* Left side - Text content */}
                 <div className="flex flex-col">
+
+                  <Badge variant={"secondary"} className="mb-8"> Rempah Nusantara 🇮🇩</Badge>
                   <p className="mt-0 max-w-2xl text-balance text-5xl font-medium md:text-6xl ">
                     Marketplace Jejak{" "}
                     <span className="text-primary">Rempah Nusantara</span>

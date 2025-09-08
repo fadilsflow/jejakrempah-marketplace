@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/hero-header";
-import { Footer } from "@/components/layout/footer";
+import Footer from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/components/layout/query-provider";
 import { CartProvider } from "@/components/layout/cart-provider";
@@ -36,8 +36,10 @@ export default function RootLayout({
         <QueryProvider>
           <CartProvider>
             <Header />
-            {children}
-            <Toaster />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Toaster position="top-center" />
             <Footer />
           </CartProvider>
         </QueryProvider>

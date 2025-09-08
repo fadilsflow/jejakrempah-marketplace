@@ -213,7 +213,7 @@ export default function SellerOrdersPage() {
 
   // Loading skeleton component
   const LoadingSkeleton = () => (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="flex items-center justify-between mb-6">
         <div>
           <Skeleton className="h-8 w-48 mb-2" />
@@ -285,7 +285,7 @@ export default function SellerOrdersPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="flex flex-col items-center justify-center py-12">
           <Package className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold mb-2">Failed to load orders</h3>
@@ -307,7 +307,7 @@ export default function SellerOrdersPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Order Management</h1>

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Store, Search, Calendar, Package } from "lucide-react";
+import { Store, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,10 +30,21 @@ type Store = {
 
 export default function StoresPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Fetch stores
   const {
@@ -41,12 +52,12 @@ export default function StoresPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["stores", currentPage, pageSize, searchTerm, sortBy, sortOrder],
+    queryKey: ["stores", currentPage, pageSize, debouncedSearchTerm, sortBy, sortOrder],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: pageSize.toString(),
-        ...(searchTerm && { q: searchTerm }),
+        ...(debouncedSearchTerm && { q: debouncedSearchTerm }),
         ...(sortBy && { sortBy }),
         ...(sortOrder && { sortOrder }),
       });
@@ -64,47 +75,82 @@ export default function StoresPage() {
 
   // Loading skeleton component
   const LoadingSkeleton = () => (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <Skeleton className="h-10 w-48 mb-2" />
-        <Skeleton className="h-6 w-96" />
-      </div>
-
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
-        <Skeleton className="h-10 flex-1" />
-        <Skeleton className="h-10 w-48" />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {[...Array(8)].map((_, i) => (
-          <Card key={i} className="overflow-hidden">
-            <CardHeader className="pb-3">
-              <div className="flex items-center space-x-3">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="flex-1">
-                  <Skeleton className="h-5 w-32 mb-1" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {[...Array(8)].map((_, i) => (
+        <Card key={i} className="overflow-hidden">
+          <CardHeader className="pb-3">
+            <div className="flex items-center space-x-3">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="flex-1">
+                <Skeleton className="h-5 w-32 mb-1" />
+                <Skeleton className="h-4 w-24" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-3/4 mb-4" />
-              <Skeleton className="h-9 w-full" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-3/4 mb-4" />
+            <Skeleton className="h-9 w-full" />
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="container mx-auto py-8 px-6 md:px-12">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Jelajahi Toko</h1>
+          <p className="text-muted-foreground text-lg">
+            Temukan berbagai toko rempah dan bumbu pilihan
+          </p>
+        </div>
+
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Cari toko..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+              className="pl-10"
+            />
+          </div>
+          <Select
+            value={`${sortBy}-${sortOrder}`}
+            onValueChange={(value) => {
+              const [newSortBy, newSortOrder] = value.split("-") as [
+                "name" | "createdAt",
+                "asc" | "desc"
+              ];
+              setSortBy(newSortBy);
+              setSortOrder(newSortOrder);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt-desc">Terbaru</SelectItem>
+              <SelectItem value="createdAt-asc">Terlama</SelectItem>
+              <SelectItem value="name-asc">Nama A-Z</SelectItem>
+              <SelectItem value="name-desc">Nama Z-A</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <LoadingSkeleton />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="flex flex-col items-center justify-center py-12">
           <Store className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold mb-2">Gagal memuat toko</h3>
@@ -120,7 +166,7 @@ export default function StoresPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Jelajahi Toko</h1>
@@ -139,7 +185,6 @@ export default function StoresPage() {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1);
             }}
             className="pl-10"
           />
@@ -185,53 +230,47 @@ export default function StoresPage() {
         ) : (
           stores.map((store: Store) => (
             <Link key={store.id} href={`/stores/${store.slug}`}>
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
-                <CardHeader className="pb-3">
+              <div className="border p-6 rounded-xl  overflow-hidden hover:border-primary transition-shadow cursor-pointer h-full">
+                <div className="pb-3 ">
                   <div className="relative flex items-center space-x-3">
                     {store.logo ? (
-                      <Image
-                        fill
-                        src={store.logo}
-                        alt={store.name}
-                        className="h-12 w-12 rounded-full object-cover"
-                      />
+                      <div className="relative h-12 w-12 overflow-hidden rounded-xl">
+                        <Image
+                          fill
+                          src={store.logo}
+                          alt={store.name}
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                         <Store className="h-6 w-6 text-primary" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg truncate">
+                      <h3 className="font-semibold text-md truncate ">
                         {store.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         @{store.slug}
                       </p>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
+                </div>
+                <div>
                   {store.description && (
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                       {store.description}
                     </p>
                   )}
 
-                  <div className="flex items-center text-xs text-muted-foreground mb-4">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    Bergabung{" "}
-                    {new Date(store.createdAt).toLocaleDateString("id-ID", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                  <div className="justify-end flex">
+                    <Button variant={"outline"} size={"sm"}>
+                      Kunjungi Toko
+                    </Button>
                   </div>
-
-                  <Button className="w-full" size="sm">
-                    <Package className="h-4 w-4 mr-2" />
-                    Lihat Produk
-                  </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </Link>
           ))
         )}

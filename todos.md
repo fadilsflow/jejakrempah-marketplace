@@ -1,9 +1,9 @@
 [x] Proteksi /login page ketika user sudah login
-[ ] Proteksi /seller/new ketika sudah mempunyai 1 store
+[x] Proteksi /seller/new ketika sudah mempunyai 1 store
 [x] fix search product in header and add debounch
-[ ] Store list section
-[ ] about section & page
-[ ] navigasi di settings page responsif
+[x] Store list section
+[x] about section
+[x] navigasi di settings page responsif
 
 [ ] Cloudinary Integration
 [ ] Midtrans Integration

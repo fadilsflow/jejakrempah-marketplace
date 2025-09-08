@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import { formatCurrency } from "@/lib/client-utils";
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt">(
     "createdAt"
   );
@@ -40,6 +41,17 @@ export default function ProductsPage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(20);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
 
   // Fetch products
   const {
@@ -51,7 +63,7 @@ export default function ProductsPage() {
       "products",
       currentPage,
       pageSize,
-      searchTerm,
+      debouncedSearchTerm,
       sortBy,
       sortOrder,
       minPrice,
@@ -65,7 +77,7 @@ export default function ProductsPage() {
         sortOrder,
       });
 
-      if (searchTerm) params.append("q", searchTerm);
+      if (debouncedSearchTerm) params.append("q", debouncedSearchTerm);
       if (minPrice > 0) params.append("minPrice", minPrice.toString());
       if (maxPrice < 1000000) params.append("maxPrice", maxPrice.toString());
 
@@ -81,10 +93,6 @@ export default function ProductsPage() {
   const products = productsData?.products || [];
   const pagination = productsData?.pagination;
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-  };
 
   const handlePriceFilter = () => {
     setMinPrice(priceRange[0]);
@@ -103,7 +111,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Semua Produk</h1>
@@ -116,7 +124,7 @@ export default function ProductsPage() {
       {/* Search and Filters */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         {/* Search */}
-        <form onSubmit={handleSearch} className="flex-1">
+        <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
@@ -126,7 +134,7 @@ export default function ProductsPage() {
               className="pl-10"
             />
           </div>
-        </form>
+        </div>
 
         {/* Sort */}
         <div className="flex gap-2">
@@ -166,7 +174,7 @@ export default function ProductsPage() {
                 <SlidersHorizontal className="w-4 h-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="px-6">
               <SheetHeader>
                 <SheetTitle>Filter Produk</SheetTitle>
                 <SheetDescription>

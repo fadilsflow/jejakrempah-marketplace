@@ -29,7 +29,7 @@ export function SellerHeader() {
 
   return (
     <header className="sticky top-17 z-50 w-full bg-background border-b">
-      <div className="mx-auto container  px-6 py-4">
+      <div className="mx-auto container px-6 md:px-12 py-4">
         <div className="flex items-center justify-between w-full gap-4">
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-1">

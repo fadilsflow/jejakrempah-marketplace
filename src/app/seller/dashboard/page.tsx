@@ -129,7 +129,7 @@ export default function SellerDashboardPage() {
   // Show loading state while session is loading
   if (isPending) {
     return (
-      <div className="container mx-auto py-8 container px-6">
+      <div className=" mx-auto py-8 container px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -140,7 +140,7 @@ export default function SellerDashboardPage() {
   // Don't render anything if not authenticated
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 container px-6">
+      <div className=" mx-auto py-8 container px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
@@ -150,7 +150,7 @@ export default function SellerDashboardPage() {
 
   if (isLoadingStore) {
     return (
-      <div className="container mx-auto py-8 px-6 ">
+      <div className="container mx-auto py-8 px-6 md:px-12 ">
         <div className="space-y-6">
           <Skeleton className="h-8 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -169,9 +169,9 @@ export default function SellerDashboardPage() {
 
   // If user doesn't have a store, redirect to create store
   if (!isLoadingStore && !storeData?.store) {
-    router.push("/seller/new");
+    router.push("/seller-new");
     return (
-      <div className="container mx-auto py-8 px-6 ">
+      <div className="container mx-auto py-8 px-6 md:px-12 ">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to store setup...</p>
         </div>
@@ -191,7 +191,7 @@ export default function SellerDashboardPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-6 ">
+    <div className="container mx-auto py-8 px-6 md:px-12 ">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">

@@ -12,6 +12,8 @@ import {
   Grid3X3,
   List,
   Search,
+  Check,
+  Share2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,8 @@ import {
 } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/client-utils";
 import Image from "next/image";
+import { toast } from "sonner";
+import { ProductCard } from "@/components/product-card";
 
 type Product = {
   id: string;
@@ -54,6 +58,7 @@ export default function StoreDetailPage({
   const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt">(
     "createdAt"
   );
+  const [copied, setCopied] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
@@ -122,7 +127,7 @@ export default function StoreDetailPage({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="mb-6">
           <Skeleton className="h-10 w-32 mb-4" />
         </div>
@@ -166,7 +171,7 @@ export default function StoreDetailPage({
 
   if (error || !store) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <Store className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Toko Tidak Ditemukan</h2>
@@ -182,22 +187,26 @@ export default function StoreDetailPage({
       </div>
     );
   }
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    toast.success("Link Toko disalin ke clipboard!");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Breadcrumb */}
-      <div className="mb-6">
+      <div className="mb-6 justify-between flex">
         <Button variant="ghost" onClick={() => router.back()} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Kembali
         </Button>
-        <nav className="text-sm text-muted-foreground">
-          <Link href="/stores" className="hover:text-primary">
-            Toko
-          </Link>
-          <span className="mx-2">/</span>
-          <span>{store.name}</span>
-        </nav>
+
+        <Button variant="outline" onClick={handleCopyLink}>
+          {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+        </Button>
       </div>
 
       {/* Store Header */}
@@ -326,48 +335,13 @@ export default function StoreDetailPage({
           className={
             viewMode === "grid"
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-4"
+              : "space-y-4 flex flex-col"
           }
         >
           {sortedProducts.map((product: Product) => (
             <Link key={product.id} href={`/products/${product.slug}`}>
               {viewMode === "grid" ? (
-                <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="relative aspect-square overflow-hidden rounded-lg mb-4">
-                      {product.image ? (
-                        <Image
-                          fill
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                          <Package className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="font-semibold mb-2 line-clamp-2">
-                      {product.name}
-                    </h3>
-                    {product.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {product.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-primary">
-                        {formatCurrency(parseFloat(product.price))}
-                      </span>
-                      <Badge
-                        variant={product.stock > 0 ? "default" : "secondary"}
-                      >
-                        {product.stock > 0 ? `Stok: ${product.stock}` : "Habis"}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ProductCard disableLinks key={product.id} product={product} />
               ) : (
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-4">

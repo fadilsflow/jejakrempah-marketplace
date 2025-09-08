@@ -8,12 +8,11 @@ import { useRouter } from "next/navigation";
 import {
   ShoppingCart,
   Store,
-  Star,
   Minus,
   Plus,
   ArrowLeft,
-  Heart,
   Share2,
+  Check,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +34,7 @@ export default function ProductDetailPage({
   const { slug } = use(params);
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { optimisticAddItem } = useCart();
   const { data: session } = authClient.useSession();
   const isAuthenticated = !!session?.user;
@@ -95,27 +94,16 @@ export default function ProductDetailPage({
     }
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: product?.name,
-          text: product?.description,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log("Error sharing:", error);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link produk disalin ke clipboard!");
-    }
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    toast.success("Link produk disalin ke clipboard!");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="mb-6">
           <Skeleton className="h-10 w-32" />
         </div>
@@ -137,7 +125,7 @@ export default function ProductDetailPage({
 
   if (error || !product) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold mb-2">Produk Tidak Ditemukan</h2>
           <p className="text-muted-foreground mb-4">
@@ -157,20 +145,16 @@ export default function ProductDetailPage({
   const isLowStock = product.stock > 0 && product.stock <= 5;
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Breadcrumb */}
-      <div className="mb-6">
+      <div className="mb-6 justify-between flex">
         <Button variant="ghost" onClick={() => router.back()} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Kembali
         </Button>
-        <nav className="text-sm text-muted-foreground">
-          <Link href="/products" className="hover:text-primary">
-            Produk
-          </Link>
-          <span className="mx-2">/</span>
-          <span>{product.name}</span>
-        </nav>
+        <Button variant="outline" onClick={handleCopyLink}>
+          {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -205,20 +189,6 @@ export default function ProductDetailPage({
               </div>
             </Link>
 
-            {/* Rating */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-muted-foreground">
-                (4.5) • 127 ulasan
-              </span>
-            </div>
 
             {/* Price */}
             <div className="text-3xl font-bold text-primary mb-4">
@@ -303,24 +273,6 @@ export default function ProductDetailPage({
                     {isOutOfStock ? "Stok Habis" : "Tambah ke Keranjang"}
                   </Button>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => setIsWishlisted(!isWishlisted)}
-                    >
-                      <Heart
-                        className={`w-4 h-4 mr-2 ${
-                          isWishlisted ? "fill-red-500 text-red-500" : ""
-                        }`}
-                      />
-                      Wishlist
-                    </Button>
-                    <Button variant="outline" onClick={handleShare}>
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Bagikan
-                    </Button>
-                  </div>
                 </div>
 
                 {/* Total Price */}
