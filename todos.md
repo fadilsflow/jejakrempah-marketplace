@@ -3,6 +3,6 @@
 [x] Store list section
 [x] about section
 [x] navigasi di settings page responsif
+[x] Cloudinary Integration
 
-[ ] Cloudinary Integration
 [ ] Midtrans Integration
