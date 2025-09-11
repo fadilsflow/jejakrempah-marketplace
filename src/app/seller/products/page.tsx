@@ -268,9 +268,9 @@ export default function ProductsPage() {
     <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Kelola Produk</h1>
-          <p className="text-muted-foreground">
-            Kelola semua produk di toko Anda ({pagination?.total || 0} produk)
+          <h1 className="text-xl lg:text-2xl font-bold">Produk</h1>
+          <p className="text-xs lg:text-md text-muted-foreground">
+            Total ({pagination?.total || 0} produk)
           </p>
         </div>
         <Link href="/seller/products/new">
@@ -495,99 +495,103 @@ export default function ProductsPage() {
       </div>
 
       {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Baris per halaman</p>
-            <Select
-              value={pageSize.toString()}
-              onValueChange={(value) => {
-                setPageSize(parseInt(value));
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {[5, 10, 20, 30, 50].map((size) => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center space-x-6 lg:space-x-8">
-            <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-              Halaman {pagination.page} dari {pagination.totalPages}
-            </div>
+      {
+        pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between space-x-2 py-4">
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0"
-                onClick={() => setCurrentPage(1)}
-                disabled={!pagination.hasPrev}
+              <p className="text-sm font-medium">Baris per halaman</p>
+              <Select
+                value={pageSize.toString()}
+                onValueChange={(value) => {
+                  setPageSize(parseInt(value));
+                  setCurrentPage(1);
+                }}
               >
-                <span className="sr-only">Go to first page</span>
-                {"<<"}
-              </Button>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={!pagination.hasPrev}
-              >
-                <span className="sr-only">Go to previous page</span>
-                {"<"}
-              </Button>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={!pagination.hasNext}
-              >
-                <span className="sr-only">Go to next page</span>
-                {">"}
-              </Button>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0"
-                onClick={() => setCurrentPage(pagination.totalPages)}
-                disabled={!pagination.hasNext}
-              >
-                <span className="sr-only">Go to last page</span>
-                {">>"}
-              </Button>
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {[5, 10, 20, 30, 50].map((size) => (
+                    <SelectItem key={size} value={size.toString()}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-6 lg:space-x-8">
+              <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+                Halaman {pagination.page} dari {pagination.totalPages}
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={!pagination.hasPrev}
+                >
+                  <span className="sr-only">Go to first page</span>
+                  {"<<"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={!pagination.hasPrev}
+                >
+                  <span className="sr-only">Go to previous page</span>
+                  {"<"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={!pagination.hasNext}
+                >
+                  <span className="sr-only">Go to next page</span>
+                  {">"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setCurrentPage(pagination.totalPages)}
+                  disabled={!pagination.hasNext}
+                >
+                  <span className="sr-only">Go to last page</span>
+                  {">>"}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-2">Hapus Produk</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak
-              dapat dibatalkan.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
-                Batal
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => deleteProductMutation.mutate(deleteConfirm)}
-                disabled={deleteProductMutation.isPending}
-              >
-                {deleteProductMutation.isPending ? "Menghapus..." : "Hapus"}
-              </Button>
+      {
+        deleteConfirm && (
+          <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-background rounded-lg p-6 w-full max-w-md">
+              <h3 className="text-lg font-semibold mb-2">Hapus Produk</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak
+                dapat dibatalkan.
+              </p>
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+                  Batal
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => deleteProductMutation.mutate(deleteConfirm)}
+                  disabled={deleteProductMutation.isPending}
+                >
+                  {deleteProductMutation.isPending ? "Menghapus..." : "Hapus"}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }

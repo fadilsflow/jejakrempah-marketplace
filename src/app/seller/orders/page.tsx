@@ -22,7 +22,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -310,10 +309,10 @@ export default function SellerOrdersPage() {
     <div className="container mx-auto py-8 px-6 md:px-12">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Order Management</h1>
-          <p className="text-muted-foreground">
-            Manage all orders containing your products ({pagination?.total || 0}{" "}
-            orders)
+          <h1 className="text-xl lg:text-2xl font-bold">Orderan</h1>
+          <p className="text-xs lg:text-md text-muted-foreground">
+            Total ({pagination?.total || 0}{" "}
+            orderan)
           </p>
         </div>
       </div>
@@ -321,7 +320,7 @@ export default function SellerOrdersPage() {
       {/* Search and Filters */}
       <div className="mb-6 flex gap-4">
         <Input
-          placeholder="Search orders, customers, or products..."
+          placeholder="Cari orderan, customer, atau produk..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
@@ -352,18 +351,18 @@ export default function SellerOrdersPage() {
                   onClick={() => handleSort("createdAt")}
                   className="h-auto p-0 font-medium"
                 >
-                  Order ID & Date
+                  Order ID & Tanggal
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Customer & Products</TableHead>
+              <TableHead>Customer & Produk</TableHead>
               <TableHead>
                 <Button
                   variant="ghost"
                   onClick={() => handleSort("total")}
                   className="h-auto p-0 font-medium"
                 >
-                  Amount
+                  Jumlah
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
@@ -377,8 +376,8 @@ export default function SellerOrdersPage() {
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Delivery Address</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Alamat Pengiriman</TableHead>
+              <TableHead>Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -549,20 +548,20 @@ export default function SellerOrdersPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() =>
                               navigator.clipboard.writeText(order.id)
                             }
                           >
-                            Copy Order ID
+                            Salin Order ID
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem asChild>
                             <Link href={`/seller/orders/${order.id}`}>
                               <Eye className="mr-2 h-4 w-4" />
-                              View Order Details
+                              Lihat Detail Order
                             </Link>
+
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() =>
@@ -572,7 +571,7 @@ export default function SellerOrdersPage() {
                             }
                           >
                             <MapPin className="mr-2 h-4 w-4" />
-                            Copy Address
+                            Salin Alamat
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

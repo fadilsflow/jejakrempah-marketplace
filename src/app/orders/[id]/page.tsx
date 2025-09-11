@@ -47,34 +47,34 @@ type OrderItem = {
 };
 const statusConfig = {
   pending: {
-    label: "Pending",
+    label: "Menunggu Pembayaran",
     icon: Clock,
     variant: "secondary" as const,
-    description: "Order is waiting for payment",
+    description: "Pesanan menunggu untuk di bayar",
   },
   paid: {
-    label: "Paid",
+    label: "Dibayar",
     icon: CheckCircle,
     variant: "default" as const,
-    description: "Payment received, preparing order",
+    description: "Pembayaran diterima, sedang menyiapkan pesanan",
   },
   shipped: {
-    label: "Shipped",
+    label: "Dalam Pengiriman",
     icon: Truck,
     variant: "default" as const,
-    description: "Order is on the way",
+    description: "Pesanan sedang dalam perjalanan",
   },
   completed: {
-    label: "Completed",
+    label: "Selesai",
     icon: CheckCircle,
     variant: "default" as const,
-    description: "Order delivered successfully",
+    description: "Pesanan berhasil terkirim",
   },
   cancelled: {
-    label: "Cancelled",
+    label: "Dibatalkan",
     icon: XCircle,
     variant: "destructive" as const,
-    description: "Order has been cancelled",
+    description: "Pesanan telah dibatalkan",
   },
 };
 
@@ -241,7 +241,7 @@ export default function OrderDetailPage({
   // Show loading state while session is loading
   if (isPending) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -252,7 +252,7 @@ export default function OrderDetailPage({
   // Don't render anything if not authenticated
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
@@ -262,7 +262,7 @@ export default function OrderDetailPage({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="mb-6">
           <Skeleton className="h-10 w-32 mb-4" />
           <Skeleton className="h-8 w-48 mb-2" />
@@ -284,16 +284,16 @@ export default function OrderDetailPage({
 
   if (error || !order) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
+          <h2 className="text-2xl font-bold mb-2">Pesanan tidak ditemukan</h2>
           <p className="text-muted-foreground mb-4">
             {error instanceof Error
               ? error.message
               : "The order you're looking for doesn't exist"}
           </p>
-          <Button onClick={() => router.push("/orders")}>Back to Orders</Button>
+          <Button onClick={() => router.push("/orders")}>Kembali ke Pesanan</Button>
         </div>
       </div>
     );
@@ -303,18 +303,18 @@ export default function OrderDetailPage({
   const StatusIcon = status.icon;
 
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-6">
         <Button variant="ghost" onClick={() => router.back()} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          Kembali
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Order #{order.id.slice(-8)}</h1>
+            <h1 className="text-3xl font-bold">Pesanan #{order.id.slice(-8)}</h1>
             <p className="text-muted-foreground">
-              Placed on {new Date(order.createdAt).toLocaleDateString()}
+              Dipesan pada {new Date(order.createdAt).toLocaleDateString()}
             </p>
           </div>
           <Badge variant={status.variant} className="text-sm">
@@ -331,7 +331,7 @@ export default function OrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                Order Items
+                Produk
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -389,7 +389,7 @@ export default function OrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Order Status
+                Status Pesanan
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -401,7 +401,7 @@ export default function OrderDetailPage({
                     {status.description}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Last updated: {new Date(order.updatedAt).toLocaleString()}
+                    Terakhir diperbarui: {new Date(order.updatedAt).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -416,7 +416,7 @@ export default function OrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Payment
+                Pembayaran
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -442,7 +442,7 @@ export default function OrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
-                Delivery Address
+                Alamat Pengiriman
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -477,12 +477,12 @@ export default function OrderDetailPage({
                     {payOrderMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
+                        Memproses...
                       </>
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Pay Now
+                        Bayar Sekarang
                       </>
                     )}
                   </Button>
@@ -497,12 +497,12 @@ export default function OrderDetailPage({
                     {cancelOrderMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cancelling...
+                        Membatalkan...
                       </>
                     ) : (
                       <>
                         <XCircle className="mr-2 h-4 w-4" />
-                        Cancel Order
+                        Batalkan Pesanan
                       </>
                     )}
                   </Button>
@@ -517,18 +517,18 @@ export default function OrderDetailPage({
                     {reorderMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding to Cart...
+                        Menambahkan ke keranjang...
                       </>
                     ) : (
                       <>
                         <Package className="mr-2 h-4 w-4" />
-                        Reorder Items
+                        Reorder Produk
                       </>
                     )}
                   </Button>
                 )}
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href="/orders">View All Orders</Link>
+                  <Link href="/orders">Lihat Semua Pesanan</Link>
                 </Button>
               </div>
             </CardContent>

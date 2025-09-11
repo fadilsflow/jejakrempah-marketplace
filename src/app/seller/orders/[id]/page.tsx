@@ -55,36 +55,37 @@ type OrderItem = {
 
 const statusConfig = {
   pending: {
-    label: "Pending",
+    label: "Menunggu Pembayaran",
     icon: Clock,
     variant: "secondary" as const,
-    description: "Waiting for payment or processing",
+    description: "Pesanan menunggu untuk di bayar",
   },
   paid: {
-    label: "Paid",
+    label: "Dibayar",
     icon: CheckCircle,
     variant: "default" as const,
-    description: "Payment received, ready to process",
+    description: "Pembayaran diterima, sedang menyiapkan pesanan",
   },
   shipped: {
-    label: "Shipped",
+    label: "Dalam Pengiriman",
     icon: Truck,
     variant: "default" as const,
-    description: "Order is on the way",
+    description: "Pesanan sedang dalam perjalanan",
   },
   completed: {
-    label: "Completed",
+    label: "Selesai",
     icon: CheckCircle,
     variant: "default" as const,
-    description: "Order delivered successfully",
+    description: "Pesanan berhasil terkirim",
   },
   cancelled: {
-    label: "Cancelled",
+    label: "Dibatalkan",
     icon: XCircle,
     variant: "destructive" as const,
-    description: "Order has been cancelled",
+    description: "Pesanan telah dibatalkan",
   },
 };
+
 
 export default function SellerOrderDetailPage({
   params,
@@ -148,7 +149,7 @@ export default function SellerOrderDetailPage({
   const handleStatusChange = (status: OrderStatus) => {
     if (
       confirm(
-        `Are you sure you want to change the order status to "${status}"?`
+        `Apakah Anda yakin ingin mengubah status pesanan menjadi "${status}"?`
       )
     ) {
       updateOrderStatusMutation.mutate(status);
@@ -165,7 +166,7 @@ export default function SellerOrderDetailPage({
   // Show loading state while session is loading
   if (isPending) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -176,7 +177,7 @@ export default function SellerOrderDetailPage({
   // Don't render anything if not authenticated
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
@@ -186,7 +187,7 @@ export default function SellerOrderDetailPage({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-6">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="mb-6">
           <Skeleton className="h-10 w-32 mb-4" />
           <Skeleton className="h-8 w-48 mb-2" />
@@ -208,17 +209,17 @@ export default function SellerOrderDetailPage({
 
   if (error || !order) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
           <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
+          <h2 className="text-2xl font-bold mb-2">Orderan tidak ditemukan</h2>
           <p className="text-muted-foreground mb-4">
             {error instanceof Error
               ? error.message
               : "The order you're looking for doesn't exist"}
           </p>
           <Button onClick={() => router.push("/seller/orders")}>
-            Back to Orders
+            Kembli ke orderan
           </Button>
         </div>
       </div>
@@ -237,18 +238,18 @@ export default function SellerOrderDetailPage({
   );
 
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-6">
         <Button variant="ghost" onClick={() => router.back()} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          Kembali
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Order #{order.id.slice(-8)}</h1>
+            <h1 className="text-3xl font-bold">Orderan #{order.id.slice(-8)}</h1>
             <p className="text-muted-foreground">
-              Placed on {new Date(order.createdAt).toLocaleDateString()}
+              Dipesan pada {new Date(order.createdAt).toLocaleDateString()}
             </p>
           </div>
           <Badge variant={status.variant} className="text-sm">
@@ -265,7 +266,7 @@ export default function SellerOrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                Your Products in This Order
+                Produk
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -293,7 +294,7 @@ export default function SellerOrderDetailPage({
                     </Link>
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-sm text-muted-foreground">
-                        Quantity: {item.quantity}
+                        Jumlah: {item.quantity}
                       </span>
                       <div className="text-right">
                         <p className="font-medium">
@@ -318,7 +319,7 @@ export default function SellerOrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Order Status Management
+                Status Orderan
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -331,13 +332,13 @@ export default function SellerOrderDetailPage({
                       {status.description}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Last updated: {new Date(order.updatedAt).toLocaleString()}
+                      Terakhir di Update: {new Date(order.updatedAt).toLocaleString()}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Update Status:</label>
+                  <label className="text-sm font-medium">Ubah Status:</label>
                   <Select
                     value={order.status}
                     onValueChange={(value: OrderStatus) =>
@@ -352,25 +353,25 @@ export default function SellerOrderDetailPage({
                       <SelectItem value="paid">
                         <div className="flex items-center">
                           <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
-                          Mark as Paid
+                          Dibayar
                         </div>
                       </SelectItem>
                       <SelectItem value="shipped">
                         <div className="flex items-center">
                           <Truck className="mr-2 h-4 w-4 text-purple-600" />
-                          Mark as Shipped
+                          Dalam Pengiriman
                         </div>
                       </SelectItem>
                       <SelectItem value="completed">
                         <div className="flex items-center">
                           <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
-                          Mark as Completed
+                          Selesai
                         </div>
                       </SelectItem>
                       <SelectItem value="cancelled">
                         <div className="flex items-center">
                           <XCircle className="mr-2 h-4 w-4 text-red-600" />
-                          Cancel Order
+                          Dibatalkan
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -378,7 +379,7 @@ export default function SellerOrderDetailPage({
                   {updateOrderStatusMutation.isPending && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Updating order status...
+                      mengubah order status...
                     </div>
                   )}
                 </div>
@@ -394,22 +395,16 @@ export default function SellerOrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                Your Revenue
+                Pendapatan Anda
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Your Items:</span>
-                  <span>{formatCurrency(sellerTotal)}</span>
-                </div>
-                <div className="border-t pt-2">
-                  <div className="flex justify-between font-bold">
-                    <span>Total Revenue:</span>
-                    <span className="text-primary">
-                      {formatCurrency(sellerTotal)}
-                    </span>
-                  </div>
+                <div className="flex justify-between font-bold">
+                  <span>Total</span>
+                  <span className="text-primary">
+                    {formatCurrency(sellerTotal)}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -420,7 +415,7 @@ export default function SellerOrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                Customer Information
+                Informasi Customer
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -446,7 +441,7 @@ export default function SellerOrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
-                Delivery Address
+                Alamat Pengiriman
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -470,15 +465,13 @@ export default function SellerOrderDetailPage({
                 className="w-full mt-3"
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    `${order.address.recipientName}\n${
-                      order.address.phone || ""
-                    }\n${order.address.street}\n${order.address.city}, ${
-                      order.address.province
+                    `${order.address.recipientName}\n${order.address.phone || ""
+                    }\n${order.address.street}\n${order.address.city}, ${order.address.province
                     } ${order.address.postalCode}`
                   )
                 }
               >
-                Copy Address
+                Salin Alamat
               </Button>
             </CardContent>
           </Card>
@@ -488,14 +481,14 @@ export default function SellerOrderDetailPage({
             <CardContent className="pt-6">
               <div className="space-y-3">
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href="/seller/orders">Back to All Orders</Link>
+                  <Link href="/seller/orders">Kembali ke semua orderan</Link>
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full"
                   onClick={() => navigator.clipboard.writeText(order.id)}
                 >
-                  Copy Order ID
+                  Salin Order ID
                 </Button>
               </div>
             </CardContent>

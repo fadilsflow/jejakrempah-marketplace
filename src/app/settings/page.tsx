@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AddressDialog } from "@/components/checkout/address-dialog";
@@ -249,10 +249,10 @@ export default function SettingsPage() {
   }
 
   const tabs = [
-    { id: "user", label: "User Data", icon: User },
-    { id: "store", label: "Store Data", icon: Store },
-    { id: "addresses", label: "Addresses", icon: MapPin },
-    { id: "danger", label: "Danger Zone", icon: Trash2 },
+    { id: "user", label: "Data User", icon: User },
+    { id: "store", label: "Data Toko", icon: Store },
+    { id: "addresses", label: "Alamat", icon: MapPin },
+    { id: "danger", label: "Zona bahaya", icon: Trash2 },
   ];
 
   const renderTabContent = () => {
@@ -260,12 +260,6 @@ export default function SettingsPage() {
       case "user":
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                User Data
-              </CardTitle>
-            </CardHeader>
             <CardContent>
               <Form {...userForm}>
                 <form onSubmit={userForm.handleSubmit(handleUpdateUser)} className="space-y-4">
@@ -274,9 +268,9 @@ export default function SettingsPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Nama</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your name" {...field} />
+                          <Input placeholder="Nama Kamu" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -287,7 +281,7 @@ export default function SettingsPage() {
                     name="image"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>User Image</FormLabel>
+                        <FormLabel>Gambar User</FormLabel>
                         <FormControl>
                           <ImageUpload
                             value={field.value || ""}
@@ -312,7 +306,7 @@ export default function SettingsPage() {
                         Updating...
                       </>
                     ) : (
-                      "Update User Data"
+                      "Update Data User"
                     )}
                   </Button>
                 </form>
@@ -324,12 +318,6 @@ export default function SettingsPage() {
       case "store":
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Store className="h-5 w-5" />
-                Store Data
-              </CardTitle>
-            </CardHeader>
             <CardContent className="space-y-4">
               {isLoadingStore ? (
                 <div className="text-center py-4">
@@ -344,10 +332,10 @@ export default function SettingsPage() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Store Name</FormLabel>
+                          <FormLabel>Nama Toko</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Store name"
+                              placeholder="Nama Toko"
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e);
@@ -364,7 +352,7 @@ export default function SettingsPage() {
                       name="slug"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Store Slug</FormLabel>
+                          <FormLabel>Slug Toko</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="store-slug"
@@ -450,12 +438,6 @@ export default function SettingsPage() {
       case "addresses":
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Addresses
-              </CardTitle>
-            </CardHeader>
             <CardContent className="space-y-4">
               {isLoadingAddresses ? (
                 <div className="text-center py-4">
@@ -517,34 +499,28 @@ export default function SettingsPage() {
       case "danger":
         return (
           <Card >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-700">
-                <Trash2 className="h-5 w-5" />
-                Danger Zone
-              </CardTitle>
-            </CardHeader>
+
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Once you delete your account, there is no going back. Please be certain.
+                Akun yang dihapus tidak dapat dikembalikan. Semua data Anda akan dihapus secara permanen.
               </p>
               <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <DialogTrigger asChild>
                   <Button className="w-full bg-red-700  text-white hover:bg-red-800 ">
-                    Delete Account
+                    Hapus Akun
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Delete Account</DialogTitle>
+                    <DialogTitle>Hapus Akun</DialogTitle>
                     <DialogDescription>
-                      This action cannot be undone. This will permanently delete your account
-                      and remove all your data from our servers.
+                      Tindakan ini tidak dapat dibatalkan. Akun Anda akan dihapus secara permanen dan semua data Anda akan dihapus dari server kami.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="deleteConfirmation">
-                        Type &quot;YAKIN&quot; to confirm account deletion
+                        Ketik &quot;YAKIN&quot; untuk mengonfirmasi penghapusan akun
                       </Label>
                       <Input
                         id="deleteConfirmation"
@@ -559,7 +535,7 @@ export default function SettingsPage() {
                       variant="outline"
                       onClick={() => setShowDeleteDialog(false)}
                     >
-                      Cancel
+                      Batal
                     </Button>
                     <Button
                       variant="destructive"
@@ -570,10 +546,10 @@ export default function SettingsPage() {
                       {deleteAccountMutation.isPending ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Deleting...
+                          Menghapus...
                         </>
                       ) : (
-                        "Delete Account"
+                        "Hapus Akun"
                       )}
                     </Button>
                   </DialogFooter>

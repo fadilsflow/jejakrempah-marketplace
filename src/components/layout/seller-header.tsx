@@ -13,12 +13,12 @@ const navigationItems = [
     icon: LayoutDashboard,
   },
   {
-    name: "Products",
+    name: "Produk",
     href: "/seller/products",
     icon: Package,
   },
   {
-    name: "Orders",
+    name: "Orderan",
     href: "/seller/orders",
     icon: ShoppingBag,
   },

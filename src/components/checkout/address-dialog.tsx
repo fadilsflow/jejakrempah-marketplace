@@ -173,22 +173,22 @@ export function AddressDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            {isEditing ? "Edit Address" : "Add New Address"}
+            {isEditing ? "Edit Alamat" : "Tambah Alamat Baru"}
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? "Update your delivery address information"
-              : "Add a new delivery address for your orders"}
+              ? "Ubah alamat pengiriman anda"
+              : "Tambahkan alamat pengiriman baru untuk pesanan Anda"}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Recipient Name */}
           <div className="space-y-2">
-            <Label htmlFor="recipientName">Recipient Name</Label>
+            <Label htmlFor="recipientName">Nama Penerima</Label>
             <Input
               id="recipientName"
-              placeholder="Full name"
+              placeholder="Nama Lengkap"
               value={formData.recipientName}
               onChange={(e) =>
                 setFormData({ ...formData, recipientName: e.target.value })
@@ -199,7 +199,7 @@ export function AddressDialog({
 
           {/* Phone */}
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number (Optional)</Label>
+            <Label htmlFor="phone">Nomor HP</Label>
             <Input
               id="phone"
               placeholder="+62 812 3456 7890"
@@ -213,10 +213,10 @@ export function AddressDialog({
 
           {/* Street Address */}
           <div className="space-y-2">
-            <Label htmlFor="street">Street Address</Label>
+            <Label htmlFor="street">Alamat Jalan</Label>
             <Input
               id="street"
-              placeholder="Street name, house number, building"
+              placeholder="Nama jalan, nomor rumah, gedung"
               value={formData.street}
               onChange={(e) =>
                 setFormData({ ...formData, street: e.target.value })
@@ -228,10 +228,10 @@ export function AddressDialog({
           {/* City and Province */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city">Kota</Label>
               <Input
                 id="city"
-                placeholder="City"
+                placeholder="kota"
                 value={formData.city}
                 onChange={(e) =>
                   setFormData({ ...formData, city: e.target.value })
@@ -240,10 +240,10 @@ export function AddressDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="province">Province</Label>
+              <Label htmlFor="province">Provinsi</Label>
               <Input
                 id="province"
-                placeholder="Province"
+                placeholder="Provinsi"
                 value={formData.province}
                 onChange={(e) =>
                   setFormData({ ...formData, province: e.target.value })
@@ -255,7 +255,7 @@ export function AddressDialog({
 
           {/* Postal Code */}
           <div className="space-y-2">
-            <Label htmlFor="postalCode">Postal Code</Label>
+            <Label htmlFor="postalCode">Kode POS</Label>
             <Input
               id="postalCode"
               placeholder="12345"
@@ -270,9 +270,9 @@ export function AddressDialog({
           {/* Default Address */}
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
-              <Label className="text-base">Default Address</Label>
+              <Label className="text-base">Alamat Default</Label>
               <p className="text-sm text-muted-foreground">
-                Use this as your default delivery address
+                Gunakan ini sebagai alamat pengiriman default Anda
               </p>
             </div>
             <Switch
@@ -291,7 +291,7 @@ export function AddressDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              Batal
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
@@ -300,7 +300,7 @@ export function AddressDialog({
                   {isEditing ? "Updating..." : "Creating..."}
                 </>
               ) : (
-                <>{isEditing ? "Update Address" : "Add Address"}</>
+                <>{isEditing ? "Update Alamat" : "Tambah Alamat"}</>
               )}
             </Button>
           </div>

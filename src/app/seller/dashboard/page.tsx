@@ -136,13 +136,10 @@ export default function SellerDashboardPage() {
   return (
     <div className="container mx-auto py-8 px-6 md:px-12 ">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-4 md:mb-8">
+        <div className="flex flex-col md:flex-row md:items-center items-start  justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Welcome back! Here&apos;s what&apos;s happening with your store.
-            </p>
+            <h1 className="lg:text-2xl text-xl font-bold mb-4 md:mb-0">Overview</h1>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={() => refetchStats()}>
@@ -152,13 +149,7 @@ export default function SellerDashboardPage() {
             <Link href="/seller/products/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Product
-              </Button>
-            </Link>
-            <Link href={`/stores/${store?.slug}`} target="_blank">
-              <Button variant="outline">
-                <Eye className="mr-2 h-4 w-4" />
-                View Store
+                Tambah Produk
               </Button>
             </Link>
           </div>
@@ -170,7 +161,7 @@ export default function SellerDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Products
+              Total Produk
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -186,7 +177,7 @@ export default function SellerDashboardPage() {
               {isLoadingStats ? (
                 <Skeleton className="h-4 w-24" />
               ) : (
-                `${stats.activeProducts || 0} active`
+                `${stats.activeProducts || 0} aktif`
               )}
             </div>
           </CardContent>
@@ -194,7 +185,7 @@ export default function SellerDashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Orderan</CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -217,7 +208,7 @@ export default function SellerDashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -228,13 +219,13 @@ export default function SellerDashboardPage() {
                 formatCurrency(stats.totalRevenue || 0)
               )}
             </div>
-            <p className="text-xs text-muted-foreground">All time earnings</p>
+            <p className="text-xs text-muted-foreground">Pendapatan Keseluruhan</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">Pesanan Terbaru</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -245,7 +236,7 @@ export default function SellerDashboardPage() {
                 stats.recentOrdersCount || 0
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Last 30 days</p>
+            <p className="text-xs text-muted-foreground">30 Hari Terakhir</p>
           </CardContent>
         </Card>
       </div>
@@ -257,7 +248,7 @@ export default function SellerDashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Quick Actions
+              Aksi Cepat
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -265,25 +256,25 @@ export default function SellerDashboardPage() {
               <Link href="/seller/products">
                 <Button variant="outline" className="w-full justify-start">
                   <Package className="mr-2 h-4 w-4" />
-                  Manage Products
+                  Manage Produk
                 </Button>
               </Link>
               <Link href="/seller/orders">
                 <Button variant="outline" className="w-full justify-start">
                   <ShoppingBag className="mr-2 h-4 w-4" />
-                  View Orders
+                  Lihat Orderan
                 </Button>
               </Link>
               <Link href="/seller/products/new">
                 <Button variant="outline" className="w-full justify-start">
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Product
+                  Tambah Produk
                 </Button>
               </Link>
               <Link href={`/stores/${store?.slug}`} target="_blank">
                 <Button variant="outline" className="w-full justify-start">
                   <Eye className="mr-2 h-4 w-4" />
-                  Preview Store
+                  Lihat Toko
                 </Button>
               </Link>
             </div>
@@ -295,7 +286,7 @@ export default function SellerDashboardPage() {
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-yellow-600" />
                     <span className="text-sm text-yellow-800">
-                      {stats.lowStockProducts} products low in stock
+                      {stats.lowStockProducts} Produk stok menipis
                     </span>
                   </div>
                   <Link href="/seller/products?filter=low-stock">
@@ -311,7 +302,7 @@ export default function SellerDashboardPage() {
                   <div className="flex items-center gap-2">
                     <ShoppingBag className="h-4 w-4 text-blue-600" />
                     <span className="text-sm text-blue-800">
-                      {stats.pendingOrders} orders need attention
+                      {stats.pendingOrders} Orderan butuuh perhatian
                     </span>
                   </div>
                   <Link href="/seller/orders?status=pending">
@@ -330,21 +321,21 @@ export default function SellerDashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Store className="h-5 w-5" />
-              Store Information
+              Informasi Toko
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">
-                  Store Name
+                  Nama
                 </label>
                 <p className="text-lg font-semibold">{store?.name}</p>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground">
-                  Store URL
+                  URL
                 </label>
                 <p className="text-sm text-blue-600">
                   <Link
@@ -359,7 +350,7 @@ export default function SellerDashboardPage() {
               {store?.description && (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">
-                    Description
+                    Deskripsi
                   </label>
                   <p className="text-sm">{store.description}</p>
                 </div>
@@ -367,7 +358,7 @@ export default function SellerDashboardPage() {
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground">
-                  Created
+                  Tanggal Bergabung
                 </label>
                 <p className="text-sm">
                   {new Date(store?.createdAt).toLocaleDateString()}
@@ -379,7 +370,7 @@ export default function SellerDashboardPage() {
               <Link href="/settings">
                 <Button variant="outline" className="w-full">
                   <Store className="mr-2 h-4 w-4" />
-                  Edit Store Settings
+                  Ubah Informasi Toko
                 </Button>
               </Link>
             </div>

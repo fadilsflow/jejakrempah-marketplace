@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,16 +55,19 @@ const productFormSchema = z.object({
 
 type UpdateProductFormData = z.infer<typeof productFormSchema>;
 
-export default function ProductEdit({ params }: { params: { id: string } }) {
+export default function ProductEdit({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const router = useRouter();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
-  const productId = params.id;
 
-  // Fetch product data
   const { data: productData, isLoading: isLoadingProduct } = useQuery({
-    queryKey: ["product", productId],
+    queryKey: ["product", id],
     queryFn: async () => {
-      const response = await fetch(`/api/products/${productId}`);
+      const response = await fetch(`/api/products/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch product");
       }
@@ -102,7 +105,7 @@ export default function ProductEdit({ params }: { params: { id: string } }) {
 
   const updateProductMutation = useMutation({
     mutationFn: async (data: UpdateProductFormData) => {
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await fetch(`/api/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
