@@ -175,9 +175,7 @@ const useCartStore = create<CartState>((set, get) => ({
         throw new Error(error.error || "Failed to clear cart");
       }
 
-      // Refresh cart data
       await fetchCart();
-      toast.success("Keranjang berhasil dikosongkan");
     } catch (error) {
       console.error("Error clearing cart:", error);
       toast.error(

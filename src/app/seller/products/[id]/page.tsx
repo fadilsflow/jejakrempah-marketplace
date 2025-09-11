@@ -28,6 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { ImageUpload } from "@/components/image-upload";
 import { generateSlug } from "@/lib/client-utils";
 import { z } from "zod";
 
@@ -48,7 +49,7 @@ const productFormSchema = z.object({
   description: z.string().optional(),
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
   stock: z.number().int().min(0, "Stock cannot be negative"),
-  image: z.string().url("Invalid image URL").optional().or(z.literal("")),
+  image: z.string().optional(),
   status: z.enum(["active", "inactive"]),
 });
 
@@ -324,13 +325,15 @@ export default function ProductEdit({ params }: { params: { id: string } }) {
               <FormItem>
                 <FormLabel>Gambar Produk (Opsional)</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="https://example.com/product-image.jpg"
-                    type="url"
-                    {...field}
+                  <ImageUpload
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    label="Unggah Gambar Produk"
+                    description="Maksimal size gambar 2MB"
+                    maxFileSize={1024 * 1024 * 2} // 2MB
                   />
                 </FormControl>
-                <FormDescription>URL gambar produk Anda</FormDescription>
+                <FormDescription>Gambar produk Anda</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -54,9 +54,11 @@ Used in:
 - `src/app/seller-new/page.tsx` - Store logo upload
 - `src/app/settings/page.tsx` - User profile image and store logo uploads
 - `src/app/seller/products/new/page.tsx` - Product image upload
+- `src/app/seller/products/[id]/page.tsx` - Product image edit
 
 ## Recent Improvements
 
 1. Fixed TypeScript error by removing explicit `any` type
 2. Improved slug field behavior to properly handle user input in forms
 3. Enhanced real-time slug generation in both seller-new and product-new pages
+4. Added ImageUpload component to product edit page

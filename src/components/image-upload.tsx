@@ -93,9 +93,6 @@ export function ImageUpload({
                             <span className="text-sm font-medium">
                                 {label}
                             </span>
-                            <span className="text-xs text-muted-foreground">
-                                Successfully uploaded
-                            </span>
                         </div>
 
                         <Button
