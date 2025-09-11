@@ -35,14 +35,14 @@ import { ImageUpload } from "@/components/image-upload";
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| value | string | "" | The current image URL |
-| onChange | function | required | Callback when image is uploaded or removed |
-| label | string | "Upload Image" | Label text for the upload button |
-| description | string | "Upload an image" | Description text for the upload button |
-| maxFileSize | number | 2MB | Maximum file size in bytes |
-| uploadPreset | string | "jrm" | Cloudinary upload preset |
+| Prop         | Type     | Default           | Description                                |
+| ------------ | -------- | ----------------- | ------------------------------------------ |
+| value        | string   | ""                | The current image URL                      |
+| onChange     | function | required          | Callback when image is uploaded or removed |
+| label        | string   | "Upload Image"    | Label text for the upload button           |
+| description  | string   | "Upload an image" | Description text for the upload button     |
+| maxFileSize  | number   | 2MB               | Maximum file size in bytes                 |
+| uploadPreset | string   | "jrm"             | Cloudinary upload preset                   |
 
 ## Integration
 
@@ -51,6 +51,7 @@ The component uses the `/api/sign-cloudinary-params` endpoint for signing upload
 ## Examples
 
 Used in:
+
 - `src/app/seller-new/page.tsx` - Store logo upload
 - `src/app/settings/page.tsx` - User profile image and store logo uploads
 - `src/app/seller/products/new/page.tsx` - Product image upload

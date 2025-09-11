@@ -21,23 +21,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 import { formatCurrency } from "@/lib/client-utils";
 
-type Product = {
-  id: string;
-  name: string;
-  status: string;
-  stock: number;
-  [key: string]: unknown;
-};
-
-type Order = {
-  id: string;
-  status: string;
-  createdAt: string;
-  sellerTotal?: string;
-  total?: string;
-  [key: string]: unknown;
-};
-
 type SellerStats = {
   totalProducts: number;
   activeProducts: number;
@@ -69,52 +52,11 @@ export default function SellerDashboardPage() {
   const { data: statsData, isLoading: isLoadingStats } = useQuery<SellerStats>({
     queryKey: ["seller-stats"],
     queryFn: async (): Promise<SellerStats> => {
-      // For now, we'll create mock stats since the API endpoints might not exist yet
-      // In a real implementation, you'd have dedicated endpoints for these stats
-      const [productsRes, ordersRes] = await Promise.all([
-        fetch("/api/products/me?limit=1000"), // Get all products to count
-        fetch("/api/orders/seller?limit=1000"), // Get all orders to count
-      ]);
-
-      const productsData = productsRes.ok
-        ? await productsRes.json()
-        : { products: [] };
-      const ordersData = ordersRes.ok ? await ordersRes.json() : { orders: [] };
-
-      const products: Product[] = productsData.products || [];
-      const orders: Order[] = ordersData.orders || [];
-
-      // Calculate stats
-      const totalProducts = products.length;
-      const activeProducts = products.filter(
-        (p: Product) => p.status === "active"
-      ).length;
-      const totalOrders = orders.length;
-      const pendingOrders = orders.filter(
-        (o: Order) => o.status === "pending"
-      ).length;
-
-      // Calculate total revenue (sum of seller's share from orders)
-      const totalRevenue = orders.reduce((sum: number, order: Order) => {
-        return sum + parseFloat(order.sellerTotal || order.total || "0");
-      }, 0);
-
-      // Recent orders (last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const recentOrders = orders.filter(
-        (o: Order) => new Date(o.createdAt) >= thirtyDaysAgo
-      );
-
-      return {
-        totalProducts,
-        activeProducts,
-        totalOrders,
-        pendingOrders,
-        totalRevenue,
-        recentOrdersCount: recentOrders.length,
-        lowStockProducts: products.filter((p: Product) => p.stock < 10).length,
-      };
+      const response = await fetch("/api/stores/dashboard/stats");
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard stats");
+      }
+      return response.json();
     },
     enabled: !!session?.user && !!storeData?.store,
   });
