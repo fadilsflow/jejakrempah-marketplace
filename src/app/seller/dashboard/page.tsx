@@ -13,6 +13,7 @@ import {
   Eye,
   BarChart3,
   Store,
+  RefreshCw,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,7 @@ export default function SellerDashboardPage() {
   });
 
   // Fetch dashboard stats
-  const { data: statsData, isLoading: isLoadingStats } = useQuery<SellerStats>({
+  const { data: statsData, isLoading: isLoadingStats, refetch: refetchStats } = useQuery<SellerStats>({
     queryKey: ["seller-stats"],
     queryFn: async (): Promise<SellerStats> => {
       const response = await fetch("/api/stores/dashboard/stats");
@@ -144,6 +145,10 @@ export default function SellerDashboardPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => refetchStats()}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
             <Link href="/seller/products/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
