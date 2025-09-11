@@ -198,7 +198,7 @@ export default function CheckoutPage() {
   // Show loading state while session is loading
   if (isPending) {
     return (
-      <div className="container mx-auto py-8 px-6 ">
+      <div className="container mx-auto py-8 px-6 md:px-12 ">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
   // Don't render anything if not authenticated
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-6 ">
+      <div className="container mx-auto py-8 px-6 md:px-12 ">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
@@ -220,7 +220,7 @@ export default function CheckoutPage() {
   // Don't render anything if cart is empty
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="container mx-auto py-8 px-6 ">
+      <div className="container mx-auto py-8 px-6 md:px-12 ">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Redirecting to products...</p>
         </div>
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
   );
 
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-6">
         <Button variant="ghost" onClick={() => router.back()} className="mb-4">

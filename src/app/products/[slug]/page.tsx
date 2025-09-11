@@ -167,10 +167,15 @@ export default function ProductDetailPage({
                 src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.srcset = "";
+                  e.currentTarget.src = "/default-product-image.png";
+                }}
+                placeholder="empty"
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
-                <div className="text-muted-foreground">No Image Available</div>
+                <div className="text-muted-foreground">No Image</div>
               </div>
             )}
           </div>

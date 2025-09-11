@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { ImageUpload } from "@/components/image-upload";
 import { generateSlug } from "@/lib/client-utils";
 import { z } from "zod";
 
@@ -49,7 +50,7 @@ const productFormSchema = z.object({
   description: z.string().optional(),
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
   stock: z.number().int().min(0, "Stock cannot be negative"),
-  image: z.string().url("Invalid image URL").optional().or(z.literal("")),
+  image: z.string().optional(),
   status: z.enum(["active", "inactive"]),
 });
 
@@ -58,6 +59,7 @@ type CreateProductFormData = z.infer<typeof productFormSchema>;
 export default function ProductNew() {
   const router = useRouter();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
+  const slugManuallyEdited = useRef(false);
 
   // Get user's store
   const { data: storeData, isLoading: isLoadingStore } = useQuery({
@@ -121,8 +123,8 @@ export default function ProductNew() {
   const handleNameChange = (name: string) => {
     form.setValue("name", name);
 
-    // Auto-generate slug from name
-    if (name && !form.getValues("slug")) {
+    // Auto-generate slug from name if it hasn't been manually edited
+    if (name && !slugManuallyEdited.current) {
       setIsGeneratingSlug(true);
       const slug = generateSlug(name);
       form.setValue("slug", slug);
@@ -150,7 +152,7 @@ export default function ProductNew() {
         <p className="text-muted-foreground mb-4">
           Anda perlu membuat toko terlebih dahulu
         </p>
-        <Link href="/seller/new">
+        <Link href="/seller-new">
           <Button>Buat Toko</Button>
         </Link>
       </div>
@@ -220,6 +222,16 @@ export default function ProductNew() {
                       placeholder="url-produk"
                       className="rounded-l-none"
                       {...field}
+                      onChange={(e) => {
+                        // Allow user to type directly in slug field
+                        field.onChange(e);
+                        // Mark slug as manually edited
+                        slugManuallyEdited.current = true;
+                        // Reset the auto-generation flag when user types
+                        if (isGeneratingSlug) {
+                          setIsGeneratingSlug(false);
+                        }
+                      }}
                       disabled={isGeneratingSlug}
                     />
                   </div>
@@ -313,13 +325,15 @@ export default function ProductNew() {
               <FormItem>
                 <FormLabel>Gambar Produk (Opsional)</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="https://example.com/product-image.jpg"
-                    type="url"
-                    {...field}
+                  <ImageUpload
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    label="Unggah Gambar Produk"
+                    description="Maksimal size gambar 2MB"
+                    maxFileSize={1024 * 1024 * 2} // 2MB
                   />
                 </FormControl>
-                <FormDescription>URL gambar produk Anda</FormDescription>
+                <FormDescription>Gambar produk Anda</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

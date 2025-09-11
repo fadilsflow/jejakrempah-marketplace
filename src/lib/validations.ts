@@ -17,7 +17,7 @@ export const createStoreSchema = z.object({
       "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
   description: z.string().optional(),
-  logo: z.string().url("Invalid logo URL").optional(),
+  logo: z.string().optional(),
 });
 
 export const updateStoreSchema = z.object({
@@ -41,10 +41,7 @@ export const updateStoreSchema = z.object({
    USER VALIDATIONS
    ====================== */
 export const updateUserSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(100, "Name too long"),
+  name: z.string().min(1, "Name is required").max(100, "Name too long"),
   image: z.string().url("Invalid image URL").optional().or(z.literal("")),
 });
 
@@ -68,7 +65,7 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
   stock: z.number().int().min(0, "Stock cannot be negative"),
-  image: z.string().url("Invalid image URL").optional(),
+  image: z.string().optional(),
   status: z.enum(["active", "inactive"]).default("active"),
 });
 

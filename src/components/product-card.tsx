@@ -55,7 +55,7 @@ export function ProductCard({
             fill
             onError={(e) => {
               e.currentTarget.srcset = "";
-              e.currentTarget.src = "/default-image.png";
+              e.currentTarget.src = "/default-product-image.png";
             }}
             placeholder="empty"
             className="object-cover h-full transition-transform duration-300 group-hover:scale-105"

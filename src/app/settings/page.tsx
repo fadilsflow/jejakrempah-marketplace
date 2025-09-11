@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AddressDialog } from "@/components/checkout/address-dialog";
+import { ImageUpload } from "@/components/image-upload";
 import { authClient } from "@/lib/auth-client";
 import { generateSlug } from "@/lib/client-utils";
 import { updateUserSchema, updateStoreSchema } from "@/lib/validations";
@@ -286,12 +287,14 @@ export default function SettingsPage() {
                     name="image"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
+                        <FormLabel>User Image</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="https://example.com/image.jpg"
-                            type="url"
-                            {...field}
+                          <ImageUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Unggah Foto Profil"
+                            description="Maksimal size gambar 2MB"
+                            maxFileSize={1024 * 1024 * 2} // 2MB
                           />
                         </FormControl>
                         <FormMessage />
@@ -363,7 +366,14 @@ export default function SettingsPage() {
                         <FormItem>
                           <FormLabel>Store Slug</FormLabel>
                           <FormControl>
-                            <Input placeholder="store-slug" {...field} />
+                            <Input
+                              placeholder="store-slug"
+                              {...field}
+                              onChange={(e) => {
+                                // Allow user to type directly in slug field
+                                field.onChange(e);
+                              }}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -391,12 +401,14 @@ export default function SettingsPage() {
                       name="logo"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Logo URL</FormLabel>
+                          <FormLabel>Store Logo</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="https://example.com/logo.png"
-                              type="url"
-                              {...field}
+                            <ImageUpload
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              label="Unggah Logo Toko"
+                              description="Maksimal size gambar 2MB"
+                              maxFileSize={1024 * 1024 * 2} // 2MB
                             />
                           </FormControl>
                           <FormMessage />
@@ -426,7 +438,7 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     You haven&apos;t created a store yet.
                   </p>
-                  <Button onClick={() => router.push("/seller/new")}>
+                  <Button onClick={() => router.push("/seller-new")}>
                     Create Store
                   </Button>
                 </div>

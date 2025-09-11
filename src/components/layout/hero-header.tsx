@@ -39,7 +39,7 @@ export function Header() {
   });
 
   const hasStore = storeData?.hasStore || false;
-  const storeHref = hasStore ? "/seller/dashboard" : "/seller/new";
+  const storeHref = hasStore ? "/seller/dashboard" : "/seller-new";
 
   const router = useRouter();
   const [globalQuery, setGlobalQuery] = useState("");

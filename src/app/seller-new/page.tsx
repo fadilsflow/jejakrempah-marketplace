@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { ImageUpload } from "@/components/image-upload";
 import { createStoreSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/client-utils";
 
@@ -33,6 +34,7 @@ type CreateStoreFormData = {
 export default function StoreNew() {
   const router = useRouter();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
+  const slugManuallyEdited = useRef(false);
 
   const form = useForm<CreateStoreFormData>({
     resolver: zodResolver(createStoreSchema),
@@ -73,8 +75,8 @@ export default function StoreNew() {
   const handleNameChange = (name: string) => {
     form.setValue("name", name);
 
-    // Auto-generate slug from name
-    if (name && !form.getValues("slug")) {
+    // Auto-generate slug from name if it hasn't been manually edited
+    if (name && !slugManuallyEdited.current) {
       setIsGeneratingSlug(true);
       const slug = generateSlug(name);
       form.setValue("slug", slug);
@@ -147,6 +149,16 @@ export default function StoreNew() {
                           placeholder="url-toko"
                           className="rounded-l-none"
                           {...field}
+                          onChange={(e) => {
+                            // Allow user to type directly in slug field
+                            field.onChange(e);
+                            // Mark slug as manually edited
+                            slugManuallyEdited.current = true;
+                            // Reset the auto-generation flag when user types
+                            if (isGeneratingSlug) {
+                              setIsGeneratingSlug(false);
+                            }
+                          }}
                           disabled={isGeneratingSlug}
                         />
                       </div>
@@ -189,13 +201,15 @@ export default function StoreNew() {
                   <FormItem>
                     <FormLabel>Logo Toko (Opsional)</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="https://example.com/logo.png"
-                        type="url"
-                        {...field}
+                      <ImageUpload
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        label="Unggah Logo Toko"
+                        description="Maksimal size gambar 2MB"
+                        maxFileSize={1024 * 1024 * 2} // 2MB
                       />
                     </FormControl>
-                    <FormDescription>URL gambar logo toko Anda</FormDescription>
+                    <FormDescription>Logo toko Anda</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
