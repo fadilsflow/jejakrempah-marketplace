@@ -2,12 +2,12 @@ import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { payment, order } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { 
-  withAuth, 
-  createErrorResponse, 
+import {
+  withAuth,
+  createErrorResponse,
   createSuccessResponse,
   validateRequestBody,
-  generateId
+  generateId,
 } from "@/lib/api-utils";
 import { createPaymentSchema } from "@/lib/validations";
 
@@ -16,7 +16,10 @@ import { createPaymentSchema } from "@/lib/validations";
  */
 export async function POST(request: NextRequest) {
   return withAuth(request, async (req, user) => {
-    const validationResult = await validateRequestBody(req, createPaymentSchema);
+    const validationResult = await validateRequestBody(
+      req,
+      createPaymentSchema
+    );
     if (validationResult.error) {
       return createErrorResponse(validationResult.error);
     }
@@ -52,11 +55,45 @@ export async function POST(request: NextRequest) {
         .limit(1);
 
       if (existingPayment.length > 0) {
-        return createErrorResponse("Payment already exists for this order", 400);
+        return createErrorResponse(
+          "Payment already exists for this order",
+          400
+        );
       }
 
-      // Generate transaction ID (in real app, this would come from Midtrans)
-      const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // Call Midtrans Snap API
+      const snapResponse = await fetch(
+        "https://app.sandbox.midtrans.com/snap/v1/transactions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${Buffer.from(
+              process.env.MIDTRANS_SERVER_KEY + ":"
+            ).toString("base64")}`,
+          },
+          body: JSON.stringify({
+            transaction_details: {
+              order_id: orderId,
+              gross_amount: orderData[0].total,
+            },
+            customer_details: {
+              first_name: user.name,
+              email: user.email,
+            },
+          }),
+        }
+      );
+
+      const snapData = await snapResponse.json();
+
+      if (!snapResponse.ok) {
+        console.error("Midtrans error:", snapData);
+        return createErrorResponse(
+          "Failed to create midtrans transaction",
+          500
+        );
+      }
 
       // Create payment record
       const newPayment = await db
@@ -64,7 +101,7 @@ export async function POST(request: NextRequest) {
         .values({
           id: generateId(),
           orderId,
-          transactionId,
+          transactionId: snapData.token, 
           status: "pending",
           grossAmount: orderData[0].total,
           paymentType,
@@ -73,13 +110,14 @@ export async function POST(request: NextRequest) {
         })
         .returning();
 
-      // In a real application, you would integrate with Midtrans here
-      // For now, we'll return the payment details with instructions
-      return createSuccessResponse({
-        payment: newPayment[0],
-        paymentUrl: `https://app.sandbox.midtrans.com/snap/v1/transactions/${transactionId}/pay`,
-        instructions: "Complete payment using the provided payment URL",
-      }, 201);
+      return createSuccessResponse(
+        {
+          payment: newPayment[0],
+          redirect_url: snapData.redirect_url, // used in frontend
+          token: snapData.token, 
+        },
+        201
+      );
     } catch (error) {
       console.error("Error creating payment:", error);
       return createErrorResponse("Failed to create payment", 500);
