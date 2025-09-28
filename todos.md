@@ -5,4 +5,8 @@
 [x] navigasi di settings page responsif
 [x] Cloudinary Integration
 
-[ ] Midtrans Integration
+[x] Midtrans Integration
+[ ] Biaya Potongan layanan 
+[ ] Dashboard Admin Biaya Potongan layanan 
+
+[ ] Singkronasi Titik simpul dengan Toko
