@@ -88,13 +88,14 @@ export default function CheckoutPage() {
   });
 
   // Create order mutation
+  // Create order mutation
   const createOrderMutation = useMutation({
     mutationFn: async (data: CheckoutForm) => {
       if (!cart || cart.items.length === 0) {
         throw new Error("Cart is empty");
       }
 
-      // First create the order
+      // 1. Create the order
       const orderData = {
         addressId: data.addressId,
         items: cart.items.map((item) => ({
@@ -105,9 +106,7 @@ export default function CheckoutPage() {
 
       const response = await fetch("/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
       });
 
@@ -118,36 +117,38 @@ export default function CheckoutPage() {
 
       const orderResult = await response.json();
 
-      // If payment method is "pay_now", immediately update order status to "paid"
+      // 2. If pay_now -> create payment
       if (data.paymentMethod === "pay_now") {
-        const updateResponse = await fetch(
-          `/api/orders/${orderResult.order.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status: "paid" }),
-          }
-        );
+        const paymentResponse = await fetch("/api/payments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: orderResult.order.id,
+            paymentType: "snap", // atau sesuai field schema kamu
+          }),
+        });
 
-        if (!updateResponse.ok) {
-          console.warn(
-            "Failed to update order status to paid, but order was created"
-          );
+        if (!paymentResponse.ok) {
+          const error = await paymentResponse.json();
+          throw new Error(error.error || "Failed to create payment");
         }
+
+        const paymentData = await paymentResponse.json();
+
+        window.location.href = paymentData.redirect_url;
       }
 
       return orderResult;
     },
     onSuccess: (data, formData) => {
       clearCart();
-      if (formData.paymentMethod === "pay_now") {
-        toast.success("Order created and payment processed successfully!");
-      } else {
+
+      if (formData.paymentMethod === "pay_later") {
         toast.success("Order created successfully! You can pay later.");
+        router.push(`/orders/${data.order.id}`);
+      } else {
+        toast.info("Redirecting to payment...");
       }
-      router.push(`/orders/${data.order.id}`);
     },
     onError: (error) => {
       console.error("Error creating order:", error);
