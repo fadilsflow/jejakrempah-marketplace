@@ -14,6 +14,7 @@ import {
   Search,
   Check,
   Share2,
+  MapPin,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,11 @@ type Product = {
   updatedAt: string;
 };
 
+type Area = {
+  id: string;
+  name: string;
+};
+
 export default function StoreDetailPage({
   params,
 }: {
@@ -62,6 +68,16 @@ export default function StoreDetailPage({
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
+
+  // Fetch areas data
+  const { data: areasData } = useQuery({
+    queryKey: ["areas"],
+    queryFn: async () => {
+      const response = await fetch("/api/stores/areas");
+      if (!response.ok) throw new Error("Failed to fetch areas");
+      return response.json();
+    },
+  });
 
   // Fetch store details and products
   const {
@@ -87,6 +103,12 @@ export default function StoreDetailPage({
   const store = storeData?.store;
   const products = storeData?.products || [];
   const pagination = storeData?.pagination;
+  const areas = areasData?.areas || [];
+
+  // Get area name from areaId
+  const areaName = store?.areaId
+    ? areas.find((area: Area) => area.id === store.areaId)?.name
+    : null;
 
   // Filter products by search term (client-side filtering)
   const filteredProducts = products.filter(
@@ -194,7 +216,6 @@ export default function StoreDetailPage({
     setTimeout(() => setCopied(false), 2000);
   };
 
-
   return (
     <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Breadcrumb */}
@@ -205,7 +226,11 @@ export default function StoreDetailPage({
         </Button>
 
         <Button variant="outline" onClick={handleCopyLink}>
-          {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+          {copied ? (
+            <Check className="w-4 h-4" />
+          ) : (
+            <Share2 className="w-4 h-4" />
+          )}
         </Button>
       </div>
 
@@ -240,7 +265,13 @@ export default function StoreDetailPage({
               </p>
             )}
 
-            <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground flex-wrap">
+              {areaName && (
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {areaName}
+                </div>
+              )}
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1" />
                 Bergabung{" "}

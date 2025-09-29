@@ -88,6 +88,7 @@ export const store = pgTable("store", {
     .references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(), // /store/[slug]
+  areaId: text("area_id"),
   description: text("description"),
   logo: text("logo"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

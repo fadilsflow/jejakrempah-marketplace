@@ -10,4 +10,4 @@
 [x] Dashboard Admin Biaya Potongan layanan 
 
 
-[ ] Singkronasi Titik simpul dengan Toko
+[x] Singkronasi Titik simpul dengan Toko

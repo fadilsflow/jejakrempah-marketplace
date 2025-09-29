@@ -16,6 +16,7 @@ export const createStoreSchema = z.object({
       /^[a-z0-9-]+$/,
       "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
+  areaId: z.string().min(1, "The area must be selected"),
   description: z.string().optional(),
   logo: z.string().optional(),
 });
@@ -33,6 +34,7 @@ export const updateStoreSchema = z.object({
       /^[a-z0-9-]+$/,
       "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
+  areaId: z.string().min(1, "The area must be selected"),
   description: z.string().optional(),
   logo: z.string().url("Invalid logo URL").optional().or(z.literal("")),
 });

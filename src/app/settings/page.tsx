@@ -13,10 +13,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { AddressDialog } from "@/components/checkout/address-dialog";
 import { ImageUpload } from "@/components/image-upload";
+import { AreaSelect } from "@/components/area-select";
 import { authClient } from "@/lib/auth-client";
 import { generateSlug } from "@/lib/client-utils";
 import { updateUserSchema, updateStoreSchema } from "@/lib/validations";
@@ -38,6 +54,7 @@ type Store = {
   id: string;
   name: string;
   slug: string;
+  areaId: string;
   description?: string;
   logo?: string;
   createdAt: string;
@@ -79,6 +96,7 @@ export default function SettingsPage() {
     defaultValues: {
       name: "",
       slug: "",
+      areaId: '',
       description: "",
       logo: "",
     },
@@ -128,6 +146,7 @@ export default function SettingsPage() {
       storeForm.reset({
         name: store.name,
         slug: store.slug,
+        areaId: store.areaId ?? '',
         description: store.description || "",
         logo: store.logo || "",
       });
@@ -175,7 +194,9 @@ export default function SettingsPage() {
     },
     onError: (error) => {
       console.error("Error updating store:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to update store");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update store"
+      );
     },
   });
 
@@ -242,7 +263,9 @@ export default function SettingsPage() {
     return (
       <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Please login to access settings</p>
+          <p className="text-muted-foreground">
+            Please login to access settings
+          </p>
         </div>
       </div>
     );
@@ -262,7 +285,10 @@ export default function SettingsPage() {
           <Card>
             <CardContent>
               <Form {...userForm}>
-                <form onSubmit={userForm.handleSubmit(handleUpdateUser)} className="space-y-4">
+                <form
+                  onSubmit={userForm.handleSubmit(handleUpdateUser)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={userForm.control}
                     name="name"
@@ -322,11 +348,16 @@ export default function SettingsPage() {
               {isLoadingStore ? (
                 <div className="text-center py-4">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  <p className="text-sm text-muted-foreground mt-2">Loading store...</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Loading store...
+                  </p>
                 </div>
               ) : store ? (
                 <Form {...storeForm}>
-                  <form onSubmit={storeForm.handleSubmit(handleUpdateStore)} className="space-y-4">
+                  <form
+                    onSubmit={storeForm.handleSubmit(handleUpdateStore)}
+                    className="space-y-4"
+                  >
                     <FormField
                       control={storeForm.control}
                       name="name"
@@ -361,6 +392,22 @@ export default function SettingsPage() {
                                 // Allow user to type directly in slug field
                                 field.onChange(e);
                               }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={storeForm.control}
+                      name="areaId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Titik Simpul Terdekat</FormLabel>
+                          <FormControl>
+                            <AreaSelect
+                              value={field.value}
+                              onChange={field.onChange}
                             />
                           </FormControl>
                           <FormMessage />
@@ -442,7 +489,9 @@ export default function SettingsPage() {
               {isLoadingAddresses ? (
                 <div className="text-center py-4">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  <p className="text-sm text-muted-foreground mt-2">Loading addresses...</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Loading addresses...
+                  </p>
                 </div>
               ) : addresses.length === 0 ? (
                 <div className="text-center py-8">
@@ -451,9 +500,7 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Add a delivery address for your orders.
                   </p>
-                  <Button onClick={handleAddAddress}>
-                    Add Address
-                  </Button>
+                  <Button onClick={handleAddAddress}>Add Address</Button>
                 </div>
               ) : (
                 <>
@@ -464,7 +511,9 @@ export default function SettingsPage() {
                         className="p-4 border rounded-lg space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium">{address.recipientName}</h4>
+                          <h4 className="font-medium">
+                            {address.recipientName}
+                          </h4>
                           {address.isDefault && (
                             <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                               Default
@@ -472,10 +521,13 @@ export default function SettingsPage() {
                           )}
                         </div>
                         {address.phone && (
-                          <p className="text-sm text-muted-foreground">{address.phone}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {address.phone}
+                          </p>
                         )}
                         <p className="text-sm text-muted-foreground">
-                          {address.street}, {address.city}, {address.province} {address.postalCode}
+                          {address.street}, {address.city}, {address.province}{" "}
+                          {address.postalCode}
                         </p>
                         <Button
                           variant="outline"
@@ -487,7 +539,11 @@ export default function SettingsPage() {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" onClick={handleAddAddress} className="w-full">
+                  <Button
+                    variant="outline"
+                    onClick={handleAddAddress}
+                    className="w-full"
+                  >
                     Add New Address
                   </Button>
                 </>
@@ -498,13 +554,16 @@ export default function SettingsPage() {
 
       case "danger":
         return (
-          <Card >
-
+          <Card>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Akun yang dihapus tidak dapat dikembalikan. Semua data Anda akan dihapus secara permanen.
+                Akun yang dihapus tidak dapat dikembalikan. Semua data Anda akan
+                dihapus secara permanen.
               </p>
-              <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <Dialog
+                open={showDeleteDialog}
+                onOpenChange={setShowDeleteDialog}
+              >
                 <DialogTrigger asChild>
                   <Button className="w-full bg-red-700  text-white hover:bg-red-800 ">
                     Hapus Akun
@@ -514,13 +573,16 @@ export default function SettingsPage() {
                   <DialogHeader>
                     <DialogTitle>Hapus Akun</DialogTitle>
                     <DialogDescription>
-                      Tindakan ini tidak dapat dibatalkan. Akun Anda akan dihapus secara permanen dan semua data Anda akan dihapus dari server kami.
+                      Tindakan ini tidak dapat dibatalkan. Akun Anda akan
+                      dihapus secara permanen dan semua data Anda akan dihapus
+                      dari server kami.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="deleteConfirmation">
-                        Ketik &quot;YAKIN&quot; untuk mengonfirmasi penghapusan akun
+                        Ketik &quot;YAKIN&quot; untuk mengonfirmasi penghapusan
+                        akun
                       </Label>
                       <Input
                         id="deleteConfirmation"
@@ -583,10 +645,11 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-2 py-2 text-left rounded transition-colors ${activeTab === tab.id
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                    }`}
+                  className={`w-full flex items-center gap-3 px-2 py-2 text-left rounded transition-colors ${
+                    activeTab === tab.id
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
                 >
                   <Icon className="h-5 w-5" />
                   <span className="font-medium">{tab.label}</span>
@@ -597,9 +660,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-h-screen">
-          {renderTabContent()}
-        </div>
+        <div className="flex-1 min-h-screen">{renderTabContent()}</div>
       </div>
 
       {/* Address Dialog */}

@@ -32,6 +32,7 @@ export async function GET(
           id: store.id,
           name: store.name,
           slug: store.slug,
+          areaId: store.areaId,
           description: store.description,
           logo: store.logo,
           createdAt: store.createdAt,
