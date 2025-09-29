@@ -27,6 +27,17 @@ export async function POST(request: NextRequest) {
     const { orderId, paymentType } = validationResult.data!;
 
     try {
+      // Validate environment variables
+      if (!process.env.MIDTRANS_SERVER_KEY) {
+        console.error("MIDTRANS_SERVER_KEY is not set");
+        return createErrorResponse("Payment service not configured", 500);
+      }
+
+      // if (!process.env.NEXT_PUBLIC_APP_URL) {
+      //   console.error("NEXT_PUBLIC_APP_URL is not set");
+      //   return createErrorResponse("App URL not configured", 500);
+      // }
+
       // Verify order exists and belongs to user
       const orderData = await db
         .select({
@@ -49,19 +60,43 @@ export async function POST(request: NextRequest) {
 
       // Check if payment already exists
       const existingPayment = await db
-        .select({ id: payment.id })
+        .select({ 
+          id: payment.id,
+          transactionId: payment.transactionId,
+          status: payment.status,
+          createdAt: payment.createdAt
+        })
         .from(payment)
         .where(eq(payment.orderId, orderId))
         .limit(1);
 
       if (existingPayment.length > 0) {
-        return createErrorResponse(
-          "Payment already exists for this order",
-          400
-        );
+        const existing = existingPayment[0];
+        
+        // If payment is still pending and not too old (less than 24 hours), return existing payment
+        const isRecent = new Date().getTime() - new Date(existing.createdAt).getTime() < 24 * 60 * 60 * 1000;
+        
+        if (existing.status === "pending" && isRecent) {
+          // Return existing payment info - user can continue with the same payment
+          return createSuccessResponse({
+            payment: existing,
+            redirect_url: `https://app.sandbox.midtrans.com/snap/v2/vtweb/${existing.transactionId}`,
+            token: existing.transactionId,
+            message: "Using existing payment"
+          });
+        }
+        
+        // If payment is expired or failed, we'll create a new one below
+        // (fall through to create new payment)
       }
 
       // Call Midtrans Snap API
+      const grossAmount = Math.round(parseFloat(orderData[0].total));
+      
+      // Generate unique order_id for Midtrans (add timestamp to make it unique)
+      const timestamp = Date.now();
+      const midtransOrderId = `${orderId}_${timestamp}`;
+      
       const snapResponse = await fetch(
         "https://app.sandbox.midtrans.com/snap/v1/transactions",
         {
@@ -74,12 +109,25 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             transaction_details: {
-              order_id: orderId,
-              gross_amount: orderData[0].total,
+              order_id: midtransOrderId,
+              gross_amount: grossAmount,
             },
             customer_details: {
-              first_name: user.name,
-              email: user.email,
+              first_name: user.name || "Customer",
+              last_name: "",
+              email: user.email || "customer@example.com",
+              phone: "",
+            },
+            item_details: [
+              {
+                id: midtransOrderId,
+                price: grossAmount,
+                quantity: 1,
+                name: `Order #${orderId.slice(-8)}`,
+              },
+            ],
+            callbacks: {
+              finish: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/orders/${orderId}`,
             },
           }),
         }
@@ -88,9 +136,24 @@ export async function POST(request: NextRequest) {
       const snapData = await snapResponse.json();
 
       if (!snapResponse.ok) {
-        console.error("Midtrans error:", snapData);
+        console.error("Midtrans API Error:");
+        console.error("Status:", snapResponse.status);
+        console.error("Response:", snapData);
+        console.error("Request body:", {
+          transaction_details: {
+            order_id: midtransOrderId,
+            gross_amount: grossAmount,
+          },
+          customer_details: {
+            first_name: user.name || "Customer",
+            last_name: "",
+            email: user.email || "customer@example.com",
+            phone: "",
+          },
+        });
+        
         return createErrorResponse(
-          "Failed to create midtrans transaction",
+          `Failed to create midtrans transaction: ${snapData.error_message || snapData.message || 'Unknown error'}`,
           500
         );
       }

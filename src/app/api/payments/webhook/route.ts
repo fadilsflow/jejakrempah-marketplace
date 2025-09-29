@@ -37,15 +37,18 @@ export async function POST(request: NextRequest) {
       return new Response("Invalid signature", { status: 401 });
     }
 
-    // Ambil payment record
+    // Extract original order_id from midtransOrderId (remove timestamp suffix)
+    const originalOrderId = order_id.includes('_') ? order_id.split('_')[0] : order_id;
+    
+    // Ambil payment record using original order_id
     const paymentData = await db
       .select({ id: payment.id, orderId: payment.orderId })
       .from(payment)
-      .where(eq(payment.orderId, order_id))
+      .where(eq(payment.orderId, originalOrderId))
       .limit(1);
 
     if (paymentData.length === 0) {
-      console.error(`[Webhook] Payment not found, order=${order_id}`);
+      console.error(`[Webhook] Payment not found, originalOrderId=${originalOrderId}, midtransOrderId=${order_id}`);
       return new Response("Payment not found", { status: 404 });
     }
 

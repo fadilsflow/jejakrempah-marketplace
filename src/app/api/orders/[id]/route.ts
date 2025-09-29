@@ -31,6 +31,7 @@ export async function GET(
           buyerId: order.buyerId,
           status: order.status,
           total: order.total,
+          serviceFee: order.serviceFee,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {

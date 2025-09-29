@@ -15,6 +15,7 @@ import {
   Filter,
   ArrowLeft,
   Loader2,
+  CreditCard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -122,6 +123,43 @@ export default function OrdersPage() {
     enabled: !!session?.user,
   });
 
+  // Pay order mutation using Midtrans
+  const payOrderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      // Create payment using Midtrans
+      const paymentResponse = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: orderId,
+          paymentType: "snap",
+        }),
+      });
+
+      if (!paymentResponse.ok) {
+        const error = await paymentResponse.json();
+        throw new Error(error.error || "Failed to create payment");
+      }
+
+      const paymentData = await paymentResponse.json();
+      return paymentData;
+    },
+    onSuccess: (data) => {
+      if (data.message === "Using existing payment") {
+        toast.info("Continuing with existing payment...");
+      } else {
+        toast.info("Redirecting to payment...");
+      }
+      window.location.href = data.redirect_url;
+    },
+    onError: (error) => {
+      console.error("Error creating payment:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create payment"
+      );
+    },
+  });
+
   // Reorder mutation
   const reorderMutation = useMutation({
     mutationFn: async (orderId: string) => {
@@ -166,6 +204,12 @@ export default function OrdersPage() {
       );
     },
   });
+
+  const handlePayOrder = (orderId: string) => {
+    if (confirm("Proceed with payment for this order?")) {
+      payOrderMutation.mutate(orderId);
+    }
+  };
 
   const handleReorder = (orderId: string) => {
     if (confirm("Add all items from this order to your cart?")) {
@@ -366,6 +410,25 @@ export default function OrdersPage() {
                         View Details
                       </Link>
                     </Button>
+                    {order.status === "pending" && (
+                      <Button
+                        size="sm"
+                        onClick={() => handlePayOrder(order.id)}
+                        disabled={payOrderMutation.isPending}
+                      >
+                        {payOrderMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="mr-2 h-4 w-4" />
+                            Pay Now
+                          </>
+                        )}
+                      </Button>
+                    )}
                     {order.status === "completed" && (
                       <Button
                         size="sm"

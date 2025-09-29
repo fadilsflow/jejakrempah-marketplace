@@ -4,7 +4,7 @@ import React, { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, Package, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -62,6 +62,7 @@ export default function ProductEdit({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
 
   const { data: productData, isLoading: isLoadingProduct } = useQuery({
@@ -70,6 +71,18 @@ export default function ProductEdit({
       const response = await fetch(`/api/products/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch product");
+      }
+      return response.json();
+    },
+  });
+
+  // Get service fee percentage
+  const { data: settingsData } = useQuery({
+    queryKey: ["system-settings"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/settings");
+      if (!response.ok) {
+        throw new Error("Failed to fetch settings");
       }
       return response.json();
     },
@@ -122,6 +135,7 @@ export default function ProductEdit({
     },
     onSuccess: () => {
       toast.success("Produk berhasil diperbarui!");
+      queryClient.invalidateQueries({ queryKey: ["user-products"] });
       router.push("/seller/products");
     },
     onError: (error: Error) => {
@@ -148,6 +162,12 @@ export default function ProductEdit({
   const onSubmit = (data: UpdateProductFormData) => {
     updateProductMutation.mutate(data);
   };
+
+  // Get service fee percentage from settings
+  const settings = settingsData?.settings || [];
+  const serviceFeeSetting = settings.find((s: { key: string; value: string }) => s.key === "service_fee_percentage");
+  const serviceFeePercentage = serviceFeeSetting ? parseFloat(serviceFeeSetting.value) : 5;
+  const sellerPercentage = 100 - serviceFeePercentage;
 
   if (isLoadingProduct) {
     return (
@@ -270,7 +290,7 @@ export default function ProductEdit({
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
             <FormField
               control={form.control}
               name="price"
@@ -291,7 +311,31 @@ export default function ProductEdit({
                       />
                     </div>
                   </FormControl>
-                  <FormDescription>Harga produk dalam Rupiah</FormDescription>
+                  <FormDescription>
+                    Harga produk dalam Rupiah
+                    <br />
+                    <span className="text-xs text-muted-foreground">
+                      ℹ️ Anda akan menerima {sellerPercentage}% dari harga ini ({serviceFeePercentage}% untuk biaya layanan)
+                    </span>
+                  </FormDescription>
+                  {field.value && parseFloat(field.value) > 0 && (
+                    <div className="mt-2 p-3 bg-muted/50 rounded-lg border">
+                      <div className="text-sm space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Harga yang Anda tetapkan:</span>
+                          <span className="font-medium">Rp {parseFloat(field.value).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Biaya layanan ({serviceFeePercentage}%):</span>
+                          <span className="text-red-600">- Rp {(parseFloat(field.value) * serviceFeePercentage / 100).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div className="flex justify-between border-t pt-1">
+                          <span className="font-medium">Pendapatan Anda:</span>
+                          <span className="font-semibold text-green-600">Rp {(parseFloat(field.value) * sellerPercentage / 100).toLocaleString('id-ID')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

@@ -107,33 +107,39 @@ export default function OrderDetailPage({
     enabled: !!session?.user,
   });
 
-  // Pay order mutation
+  // Pay order mutation using Midtrans
   const payOrderMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`/api/orders/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "paid" }),
+      // Create payment using Midtrans
+      const paymentResponse = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: id,
+          paymentType: "snap",
+        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to process payment");
+      if (!paymentResponse.ok) {
+        const error = await paymentResponse.json();
+        throw new Error(error.error || "Failed to create payment");
       }
 
-      return response.json();
+      const paymentData = await paymentResponse.json();
+      return paymentData;
     },
-    onSuccess: () => {
-      toast.success("Payment processed successfully!");
-      queryClient.invalidateQueries({ queryKey: ["order", id] });
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    onSuccess: (data) => {
+      if (data.message === "Using existing payment") {
+        toast.info("Continuing with existing payment...");
+      } else {
+        toast.info("Redirecting to payment...");
+      }
+      window.location.href = data.redirect_url;
     },
     onError: (error) => {
-      console.error("Error processing payment:", error);
+      console.error("Error creating payment:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to process payment"
+        error instanceof Error ? error.message : "Failed to create payment"
       );
     },
   });

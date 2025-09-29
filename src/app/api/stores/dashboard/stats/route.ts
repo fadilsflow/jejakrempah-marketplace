@@ -70,11 +70,13 @@ export async function GET(request: NextRequest) {
         (o) => new Date(o.createdAt) >= thirtyDaysAgo
       ).length;
 
-      // Calculate total revenue (sum of seller's share from orders)
+      // Calculate total revenue (sum of seller's share from orders after service fee)
       const orderItems = await db
         .select({
           price: orderItem.price,
           quantity: orderItem.quantity,
+          orderTotal: order.total,
+          serviceFee: order.serviceFee,
         })
         .from(orderItem)
         .innerJoin(order, eq(orderItem.orderId, order.id))
@@ -85,17 +87,31 @@ export async function GET(request: NextRequest) {
           )
         );
 
-      const totalRevenue = orderItems.reduce(
-        (sum, item) => sum + parseFloat(item.price.toString()) * item.quantity,
-        0
-      );
+      let totalRevenue = 0;
+      let totalServiceFeePaid = 0;
+      let totalGrossRevenue = 0;
+
+      orderItems.forEach((item) => {
+        const itemTotal = parseFloat(item.price.toString()) * item.quantity;
+        const orderTotal = parseFloat(item.orderTotal.toString());
+        const serviceFee = parseFloat(item.serviceFee.toString());
+        
+        // Calculate seller's proportional service fee
+        const sellerServiceFee = (itemTotal * serviceFee) / orderTotal;
+        
+        totalGrossRevenue += itemTotal;
+        totalServiceFeePaid += sellerServiceFee;
+        totalRevenue += (itemTotal - sellerServiceFee);
+      });
 
       return createSuccessResponse({
         totalProducts,
         activeProducts,
         totalOrders,
         pendingOrders,
-        totalRevenue,
+        totalRevenue: totalRevenue.toFixed(2),
+        totalGrossRevenue: totalGrossRevenue.toFixed(2),
+        totalServiceFeePaid: totalServiceFeePaid.toFixed(2),
         recentOrdersCount,
         lowStockProducts,
       });

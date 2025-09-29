@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
           buyerId: order.buyerId,
           status: order.status,
           total: order.total,
+          serviceFee: order.serviceFee,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {
@@ -136,10 +137,16 @@ export async function GET(request: NextRequest) {
             0
           );
 
+          // Calculate service fee for seller's portion of the order
+          const sellerServiceFee = (sellerTotal * parseFloat(orderData.serviceFee)) / parseFloat(orderData.total);
+          const sellerEarnings = sellerTotal - sellerServiceFee;
+
           return {
             ...orderData,
             items,
             sellerTotal: sellerTotal.toFixed(2),
+            sellerServiceFee: sellerServiceFee.toFixed(2),
+            sellerEarnings: sellerEarnings.toFixed(2),
           };
         })
       );

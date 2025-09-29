@@ -64,6 +64,11 @@ export function UserButton() {
           )}
         </div>
 
+        {session?.user?.role === "admin" && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin/dashboard">Admin Dashboard</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link href="/orders">Pesanan</Link>
         </DropdownMenuItem>

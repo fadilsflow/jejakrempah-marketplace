@@ -13,6 +13,7 @@ import {
   createPaginationMeta
 } from "@/lib/api-utils";
 import { createOrderSchema, paginationSchema } from "@/lib/validations";
+import { calculateServiceFee } from "@/lib/config";
 
 /**
  * GET /api/orders - Get user's orders with pagination
@@ -42,6 +43,7 @@ export async function GET(request: NextRequest) {
           id: order.id,
           status: order.status,
           total: order.total,
+          serviceFee: order.serviceFee,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {
@@ -171,6 +173,9 @@ export async function POST(request: NextRequest) {
         });
       }
 
+      // Calculate service fee using database value
+      const serviceFeeAmount = await calculateServiceFee(total);
+
       // Create order
       const newOrder = await db
         .insert(order)
@@ -180,6 +185,7 @@ export async function POST(request: NextRequest) {
           addressId,
           status: "pending",
           total: total.toFixed(2),
+          serviceFee: serviceFeeAmount.toFixed(2),
           createdAt: new Date(),
           updatedAt: new Date(),
         })

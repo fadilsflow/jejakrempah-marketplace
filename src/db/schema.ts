@@ -25,6 +25,11 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
+  // Admin plugin fields
+  role: text("role").default("user"),
+  banned: boolean("banned").default(false),
+  banReason: text("ban_reason"),
+  banExpires: timestamp("ban_expires"),
 });
 
 export const session = pgTable("session", {
@@ -38,6 +43,8 @@ export const session = pgTable("session", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  // Admin plugin field
+  impersonatedBy: text("impersonated_by"),
 });
 
 export const account = pgTable("account", {
@@ -157,6 +164,7 @@ export const order = pgTable("order", {
     .references(() => address.id, { onDelete: "restrict" }),
   status: text("status").$defaultFn(() => "pending"), // pending, paid, shipped, completed, cancelled
   total: numeric("total", { precision: 10, scale: 2 }).notNull(),
+  serviceFee: numeric("service_fee", { precision: 10, scale: 2 }).notNull().default("0.00"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -188,6 +196,18 @@ export const payment = pgTable("payment", {
   status: text("status").$defaultFn(() => "pending"), // pending, settlement, deny, expire, cancel
   grossAmount: numeric("gross_amount", { precision: 10, scale: 2 }).notNull(),
   paymentType: text("payment_type"), // e.g. bank_transfer, gopay
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+/* ======================
+   SYSTEM SETTINGS
+   ====================== */
+export const systemSettings = pgTable("system_settings", {
+  id: text("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  value: text("value").notNull(),
+  description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

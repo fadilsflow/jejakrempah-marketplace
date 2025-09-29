@@ -6,7 +6,8 @@
 [x] Cloudinary Integration
 
 [x] Midtrans Integration
-[ ] Biaya Potongan layanan 
-[ ] Dashboard Admin Biaya Potongan layanan 
+[x] Biaya Potongan layanan 
+[x] Dashboard Admin Biaya Potongan layanan 
+
 
 [ ] Singkronasi Titik simpul dengan Toko
