@@ -60,11 +60,11 @@ export async function POST(request: NextRequest) {
 
       // Check if payment already exists
       const existingPayment = await db
-        .select({ 
+        .select({
           id: payment.id,
           transactionId: payment.transactionId,
           status: payment.status,
-          createdAt: payment.createdAt
+          createdAt: payment.createdAt,
         })
         .from(payment)
         .where(eq(payment.orderId, orderId))
@@ -72,33 +72,35 @@ export async function POST(request: NextRequest) {
 
       if (existingPayment.length > 0) {
         const existing = existingPayment[0];
-        
+
         // If payment is still pending and not too old (less than 24 hours), return existing payment
-        const isRecent = new Date().getTime() - new Date(existing.createdAt).getTime() < 24 * 60 * 60 * 1000;
-        
+        const isRecent =
+          new Date().getTime() - new Date(existing.createdAt).getTime() <
+          24 * 60 * 60 * 1000;
+
         if (existing.status === "pending" && isRecent) {
           // Return existing payment info - user can continue with the same payment
           return createSuccessResponse({
             payment: existing,
-            redirect_url: `https://app.sandbox.midtrans.com/snap/v2/vtweb/${existing.transactionId}`,
+            redirect_url: `https://app.midtrans.com/snap/v2/vtweb/${existing.transactionId}`,
             token: existing.transactionId,
-            message: "Using existing payment"
+            message: "Using existing payment",
           });
         }
-        
+
         // If payment is expired or failed, we'll create a new one below
         // (fall through to create new payment)
       }
 
       // Call Midtrans Snap API
       const grossAmount = Math.round(parseFloat(orderData[0].total));
-      
+
       // Generate unique order_id for Midtrans (add timestamp to make it unique)
       const timestamp = Date.now();
       const midtransOrderId = `${orderId}_${timestamp}`;
-      
+
       const snapResponse = await fetch(
-        "https://app.sandbox.midtrans.com/snap/v1/transactions",
+        "https://app.midtrans.com/snap/v1/transactions",
         {
           method: "POST",
           headers: {
@@ -127,7 +129,9 @@ export async function POST(request: NextRequest) {
               },
             ],
             callbacks: {
-              finish: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/orders/${orderId}`,
+              finish: `${
+                process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+              }/orders/${orderId}`,
             },
           }),
         }
@@ -151,9 +155,11 @@ export async function POST(request: NextRequest) {
             phone: "",
           },
         });
-        
+
         return createErrorResponse(
-          `Failed to create midtrans transaction: ${snapData.error_message || snapData.message || 'Unknown error'}`,
+          `Failed to create midtrans transaction: ${
+            snapData.error_message || snapData.message || "Unknown error"
+          }`,
           500
         );
       }
@@ -164,7 +170,7 @@ export async function POST(request: NextRequest) {
         .values({
           id: generateId(),
           orderId,
-          transactionId: snapData.token, 
+          transactionId: snapData.token,
           status: "pending",
           grossAmount: orderData[0].total,
           paymentType,
@@ -177,7 +183,7 @@ export async function POST(request: NextRequest) {
         {
           payment: newPayment[0],
           redirect_url: snapData.redirect_url, // used in frontend
-          token: snapData.token, 
+          token: snapData.token,
         },
         201
       );
