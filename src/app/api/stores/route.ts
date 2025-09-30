@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
           id: store.id,
           name: store.name,
           slug: store.slug,
+          areaId: store.areaId,
           description: store.description,
           logo: store.logo,
           createdAt: store.createdAt,
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(validationResult.error);
     }
 
-    const { name, slug, description, logo } = validationResult.data!;
+    const { name, slug, areaId, description, logo } = validationResult.data!;
 
     try {
       // Check if user already has a store (one store per user limit)
@@ -143,6 +144,7 @@ export async function POST(request: NextRequest) {
           ownerId: user.id,
           name,
           slug,
+          areaId,
           description,
           logo,
           createdAt: new Date(),

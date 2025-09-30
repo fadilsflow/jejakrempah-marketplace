@@ -2,10 +2,10 @@ import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { store } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { 
-  withAuth, 
-  createErrorResponse, 
-  createSuccessResponse
+import {
+  withAuth,
+  createErrorResponse,
+  createSuccessResponse,
 } from "@/lib/api-utils";
 
 /**
@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
           id: store.id,
           name: store.name,
           slug: store.slug,
+          areaId: store.areaId,
           description: store.description,
           logo: store.logo,
           createdAt: store.createdAt,

@@ -22,6 +22,7 @@ type Store = {
   id: string;
   name: string;
   slug: string;
+  areaId: string;
   description?: string;
   logo?: string;
   createdAt: string;

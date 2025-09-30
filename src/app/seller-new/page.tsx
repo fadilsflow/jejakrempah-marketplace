@@ -23,13 +23,10 @@ import {
 import { ImageUpload } from "@/components/image-upload";
 import { createStoreSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/client-utils";
+import { AreaSelect } from "@/components/area-select";
+import type { z } from "zod";
 
-type CreateStoreFormData = {
-  name: string;
-  slug: string;
-  description?: string;
-  logo?: string;
-};
+type CreateStoreFormData = z.infer<typeof createStoreSchema>;
 
 export default function StoreNew() {
   const router = useRouter();
@@ -41,6 +38,7 @@ export default function StoreNew() {
     defaultValues: {
       name: "",
       slug: "",
+      areaId: "", 
       description: "",
       logo: "",
     },
@@ -150,14 +148,9 @@ export default function StoreNew() {
                           className="rounded-l-none"
                           {...field}
                           onChange={(e) => {
-                            // Allow user to type directly in slug field
                             field.onChange(e);
-                            // Mark slug as manually edited
                             slugManuallyEdited.current = true;
-                            // Reset the auto-generation flag when user types
-                            if (isGeneratingSlug) {
-                              setIsGeneratingSlug(false);
-                            }
+                            if (isGeneratingSlug) setIsGeneratingSlug(false);
                           }}
                           disabled={isGeneratingSlug}
                         />
@@ -167,6 +160,23 @@ export default function StoreNew() {
                       URL unik untuk toko Anda. Hanya huruf kecil, angka, dan
                       tanda hubung.
                     </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="areaId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Titik Simpul Terdekat</FormLabel>
+                    <FormControl>
+                      <AreaSelect
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -206,7 +216,7 @@ export default function StoreNew() {
                         onChange={field.onChange}
                         label="Unggah Logo Toko"
                         description="Maksimal size gambar 2MB"
-                        maxFileSize={1024 * 1024 * 2} // 2MB
+                        maxFileSize={1024 * 1024 * 2}
                       />
                     </FormControl>
                     <FormDescription>Logo toko Anda</FormDescription>
