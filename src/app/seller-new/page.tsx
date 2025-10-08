@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -25,6 +25,7 @@ import { createStoreSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/client-utils";
 import { AreaSelect } from "@/components/area-select";
 import type { z } from "zod";
+import { authClient } from "@/lib/auth-client";
 
 type CreateStoreFormData = z.infer<typeof createStoreSchema>;
 
@@ -33,6 +34,11 @@ export default function StoreNew() {
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
   const slugManuallyEdited = useRef(false);
 
+  const { data: session } = authClient.useSession();
+
+  if (!session) {
+      redirect("/");
+  }
   const form = useForm<CreateStoreFormData>({
     resolver: zodResolver(createStoreSchema),
     defaultValues: {
