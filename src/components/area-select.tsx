@@ -15,32 +15,42 @@ type Props = {
   disabled?: boolean;
 };
 
+type Destination = {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+};
+
 export function AreaSelect({ value, onChange, disabled }: Props) {
-  const { data, isLoading } = useQuery({
-    queryKey: ["areas"],
+  const { data, isLoading } = useQuery<Destination[]>({
+    queryKey: ["destinations"],
     queryFn: async () => {
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
       const res = await fetch(`${baseUrl}/api/destination`);
-      if (!res.ok) throw new Error("Gagal memuat area");
-      return res.json() as Promise<{ areas: { id: string; name: string }[] }>;
+      if (!res.ok) throw new Error("Gagal memuat destinasi");
+      return res.json();
     },
   });
 
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder={isLoading ? "Memuat..." : "Pilih Area"} />
+        <SelectValue
+          placeholder={isLoading ? "Memuat..." : "Pilih Destinasi"}
+        />
       </SelectTrigger>
+
       <SelectContent className="w-full">
-        {data?.areas && data.areas.length > 0 ? (
-          data.areas.map((a) => (
-            <SelectItem key={a.id} value={a.id}>
-              {a.name}
+        {data && data.length > 0 ? (
+          data.map((dest) => (
+            <SelectItem key={dest.id} value={dest.id}>
+              {dest.name}
             </SelectItem>
           ))
         ) : (
           <SelectItem disabled value="none">
-            Tidak ada area tersedia
+            Tidak ada destinasi tersedia
           </SelectItem>
         )}
       </SelectContent>
