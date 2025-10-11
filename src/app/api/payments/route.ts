@@ -105,8 +105,8 @@ export async function POST(request: NextRequest) {
       const midtransOrderId = `${orderId}_${timestamp}`;
 
       const snapResponse = await fetch(
-        // "https://app.midtrans.com/snap/v1/transactions",
-        "https://app.sandbox.midtrans.com/snap/v1/transactions",
+        "https://app.midtrans.com/snap/v1/transactions",
+        // "https://app.sandbox.midtrans.com/snap/v1/transactions",
         {
           method: "POST",
           headers: {
