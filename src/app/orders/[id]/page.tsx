@@ -45,6 +45,9 @@ type OrderItem = {
     slug: string;
   };
 };
+
+
+
 const statusConfig = {
   pending: {
     label: "Menunggu Pembayaran",
@@ -429,13 +432,17 @@ export default function OrderDetailPage({
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>{formatCurrency(parseFloat(order.total))}</span>
+                  <span>{formatCurrency(parseFloat(order.total || "0"))}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Service Fee:</span>
+                  <span>{formatCurrency(parseFloat(order.buyerServiceFee || "0"))}</span>
                 </div>
                 <div className="border-t pt-2">
                   <div className="flex justify-between font-bold">
                     <span>Total:</span>
                     <span className="text-primary">
-                      {formatCurrency(parseFloat(order.total))}
+                      {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0"))}
                     </span>
                   </div>
                 </div>

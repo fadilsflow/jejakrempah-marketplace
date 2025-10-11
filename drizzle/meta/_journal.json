@@ -36,6 +36,20 @@
       "when": 1759161206583,
       "tag": "0004_brown_payback",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1759161300000,
+      "tag": "0005_add_buyer_service_fee",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760165153059,
+      "tag": "0005_hot_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

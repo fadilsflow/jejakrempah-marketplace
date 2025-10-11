@@ -53,6 +53,7 @@ type OrderItem = {
   };
 };
 
+
 const statusConfig = {
   pending: {
     label: "Menunggu Pembayaran",
@@ -400,11 +401,31 @@ export default function SellerOrderDetailPage({
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex justify-between font-bold">
-                  <span>Total</span>
-                  <span className="text-primary">
-                    {formatCurrency(sellerTotal)}
-                  </span>
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>{formatCurrency(sellerTotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Service Fee ({formatCurrency(parseFloat(order.serviceFee || "0"))}):</span>
+                  <span>-{formatCurrency(parseFloat(order.serviceFee || "0"))}</span>
+                </div>
+                <div className="border-t pt-2">
+                  <div className="flex justify-between font-bold">
+                    <span>Your Earnings:</span>
+                    <span className="text-primary">
+                      {formatCurrency(sellerTotal - parseFloat(order.serviceFee || "0"))}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground pt-2 border-t">
+                  <div className="flex justify-between">
+                    <span>Customer paid total:</span>
+                    <span>{formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Including buyer service fee:</span>
+                    <span>{formatCurrency(parseFloat(order.buyerServiceFee || "0"))}</span>
+                  </div>
                 </div>
               </div>
             </CardContent>

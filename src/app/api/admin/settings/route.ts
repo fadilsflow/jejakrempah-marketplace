@@ -20,14 +20,24 @@ const updateSettingSchema = z.object({
  */
 async function createDefaultSettings() {
   try {
-    await db.insert(systemSettings).values({
-      id: generateId(),
-      key: "service_fee_percentage",
-      value: "5",
-      description: "Service fee percentage charged to sellers",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    await db.insert(systemSettings).values([
+      {
+        id: generateId(),
+        key: "service_fee_percentage",
+        value: "5",
+        description: "Service fee percentage charged to sellers",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: generateId(),
+        key: "buyer_service_fee",
+        value: "2000",
+        description: "Fixed service fee amount charged to buyers",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
     console.log("Default settings created successfully");
   } catch (error) {
     console.error("Error creating default settings:", error);
@@ -36,27 +46,46 @@ async function createDefaultSettings() {
 }
 
 /**
- * GET /api/admin/settings - Get all system settings
+ * GET /api/admin/settings - Get all system settings or specific setting by key
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const settings = await db
-      .select()
-      .from(systemSettings)
-      .orderBy(systemSettings.key);
+    const { searchParams } = new URL(request.url);
+    const key = searchParams.get("key");
 
-    // If no settings exist, create default ones
-    if (settings.length === 0) {
-      await createDefaultSettings();
-      // Fetch again after creating defaults
-      const newSettings = await db
+    if (key) {
+      // Get specific setting by key
+      const setting = await db
+        .select()
+        .from(systemSettings)
+        .where(eq(systemSettings.key, key))
+        .limit(1);
+
+      if (setting.length === 0) {
+        return createErrorResponse("Setting not found", 404);
+      }
+
+      return createSuccessResponse({ setting: setting[0] });
+    } else {
+      // Get all settings
+      const settings = await db
         .select()
         .from(systemSettings)
         .orderBy(systemSettings.key);
-      return createSuccessResponse({ settings: newSettings });
-    }
 
-    return createSuccessResponse({ settings });
+      // If no settings exist, create default ones
+      if (settings.length === 0) {
+        await createDefaultSettings();
+        // Fetch again after creating defaults
+        const newSettings = await db
+          .select()
+          .from(systemSettings)
+          .orderBy(systemSettings.key);
+        return createSuccessResponse({ settings: newSettings });
+      }
+
+      return createSuccessResponse({ settings });
+    }
   } catch (error) {
     console.error("Error fetching settings:", error);
     return createErrorResponse("Failed to fetch settings", 500);
@@ -67,7 +96,10 @@ export async function GET() {
  * PUT /api/admin/settings - Update a system setting
  */
 export async function PUT(request: NextRequest) {
-  const validationResult = await validateRequestBody(request, updateSettingSchema);
+  const validationResult = await validateRequestBody(
+    request,
+    updateSettingSchema
+  );
   if (validationResult.error) {
     return createErrorResponse(validationResult.error);
   }

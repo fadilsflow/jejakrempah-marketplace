@@ -37,6 +37,7 @@ import { useCart } from "@/hooks/use-cart";
 import { authClient } from "@/lib/auth-client";
 import { formatCurrency } from "@/lib/client-utils";
 import { checkoutSchema } from "@/lib/validations";
+import { getBuyerServiceFeeSync } from "@/lib/client-config";
 import type { z } from "zod";
 import Image from "next/image";
 
@@ -81,6 +82,21 @@ export default function CheckoutPage() {
       const response = await fetch("/api/addresses");
       if (!response.ok) {
         throw new Error("Failed to fetch addresses");
+      }
+      return response.json();
+    },
+    enabled: !!session?.user,
+  });
+
+  // Fetch buyer service fee
+  const {
+    data: buyerServiceFeeData,
+  } = useQuery({
+    queryKey: ["buyer-service-fee"],
+    queryFn: async () => {
+      const response = await fetch("/api/buyer-service-fee");
+      if (!response.ok) {
+        throw new Error("Failed to fetch buyer service fee");
       }
       return response.json();
     },
@@ -188,6 +204,9 @@ export default function CheckoutPage() {
   // Get addresses data
   const addresses = addressesData?.addresses || [];
   const defaultAddress = addresses.find((addr: Address) => addr.isDefault);
+
+  // Get buyer service fee
+  const buyerServiceFee = buyerServiceFeeData?.buyerServiceFee || getBuyerServiceFeeSync();
 
   // Set default address if available and not already set
   React.useEffect(() => {
@@ -484,7 +503,7 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Place Order • {formatCurrency(parseFloat(cart.total))}
+                        Place Order • {formatCurrency(parseFloat(cart.total) + buyerServiceFee)}
                       </>
                     )}
                   </Button>
@@ -541,11 +560,23 @@ export default function CheckoutPage() {
                 </div>
               ))}
 
-              <div className="border-t pt-4">
+              <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Subtotal:</span>
+                  <span className="text-sm">
+                    {formatCurrency(parseFloat(cart.total))}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Service Fee:</span>
+                  <span className="text-sm">
+                    {formatCurrency(buyerServiceFee)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center border-t pt-2">
                   <span className="font-semibold">Total:</span>
                   <span className="font-bold text-lg text-primary">
-                    {formatCurrency(parseFloat(cart.total))}
+                    {formatCurrency(parseFloat(cart.total) + buyerServiceFee)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -596,3 +627,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

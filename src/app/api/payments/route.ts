@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
           buyerId: order.buyerId,
           status: order.status,
           total: order.total,
+          buyerServiceFee: order.buyerServiceFee,
         })
         .from(order)
         .where(and(eq(order.id, orderId), eq(order.buyerId, user.id)))
@@ -93,14 +94,19 @@ export async function POST(request: NextRequest) {
       }
 
       // Call Midtrans Snap API
-      const grossAmount = Math.round(parseFloat(orderData[0].total));
+      // Include buyer service fee in the total amount sent to Midtrans
+      const grossAmount = Math.round(
+        parseFloat(orderData[0].total) +
+          parseFloat(orderData[0].buyerServiceFee)
+      );
 
       // Generate unique order_id for Midtrans (add timestamp to make it unique)
       const timestamp = Date.now();
       const midtransOrderId = `${orderId}_${timestamp}`;
 
       const snapResponse = await fetch(
-        "https://app.midtrans.com/snap/v1/transactions",
+        // "https://app.midtrans.com/snap/v1/transactions",
+        "https://app.sandbox.midtrans.com/snap/v1/transactions",
         {
           method: "POST",
           headers: {
@@ -122,10 +128,16 @@ export async function POST(request: NextRequest) {
             },
             item_details: [
               {
-                id: midtransOrderId,
-                price: grossAmount,
+                id: `${orderId}_items`,
+                price: Math.round(parseFloat(orderData[0].total)),
                 quantity: 1,
-                name: `Order #${orderId.slice(-8)}`,
+                name: `Order #${orderId.slice(-8)} - Items`,
+              },
+              {
+                id: `${orderId}_service_fee`,
+                price: Math.round(parseFloat(orderData[0].buyerServiceFee)),
+                quantity: 1,
+                name: `Service Fee`,
               },
             ],
             callbacks: {
@@ -172,7 +184,10 @@ export async function POST(request: NextRequest) {
           orderId,
           transactionId: snapData.token,
           status: "pending",
-          grossAmount: orderData[0].total,
+          grossAmount: (
+            parseFloat(orderData[0].total) +
+            parseFloat(orderData[0].buyerServiceFee)
+          ).toFixed(2),
           paymentType,
           createdAt: new Date(),
           updatedAt: new Date(),

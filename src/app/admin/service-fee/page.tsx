@@ -30,6 +30,14 @@ const serviceFeeSchema = z.object({
       const num = parseFloat(val);
       return num >= 0 && num <= 100;
     }, "Percentage must be between 0 and 100"),
+  buyer_service_fee: z
+    .string()
+    .min(1, "Buyer service fee is required")
+    .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount format")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return num >= 0;
+    }, "Amount must be 0 or greater"),
 });
 
 type ServiceFeeForm = z.infer<typeof serviceFeeSchema>;
@@ -51,6 +59,7 @@ export default function ServiceFeePage() {
     resolver: zodResolver(serviceFeeSchema),
     defaultValues: {
       service_fee_percentage: "5",
+      buyer_service_fee: "2000",
     },
   });
 
@@ -69,24 +78,38 @@ export default function ServiceFeePage() {
   // Update setting mutation
   const updateSettingMutation = useMutation({
     mutationFn: async (data: ServiceFeeForm) => {
-      const response = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          key: "service_fee_percentage",
-          value: data.service_fee_percentage,
+      // Update both settings
+      const responses = await Promise.all([
+        fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key: "service_fee_percentage",
+            value: data.service_fee_percentage,
+          }),
         }),
-      });
+        fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key: "buyer_service_fee",
+            value: data.buyer_service_fee,
+          }),
+        }),
+      ]);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update setting");
+      // Check if any response failed
+      for (const response of responses) {
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to update setting");
+        }
       }
 
-      return response.json();
+      return Promise.all(responses.map(r => r.json()));
     },
     onSuccess: () => {
-      toast.success("Service fee percentage updated successfully!");
+      toast.success("Service fee settings updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["system-settings"] });
       setIsEditing(false);
     },
@@ -107,20 +130,25 @@ export default function ServiceFeePage() {
 
   const settings: SystemSetting[] = settingsData?.settings || [];
   const serviceFeeSetting = settings.find(s => s.key === "service_fee_percentage");
+  const buyerServiceFeeSetting = settings.find(s => s.key === "buyer_service_fee");
 
   // Set form value when data loads
   React.useEffect(() => {
     if (serviceFeeSetting) {
       form.setValue("service_fee_percentage", serviceFeeSetting.value);
     }
-  }, [serviceFeeSetting, form]);
+    if (buyerServiceFeeSetting) {
+      form.setValue("buyer_service_fee", buyerServiceFeeSetting.value);
+    }
+  }, [serviceFeeSetting, buyerServiceFeeSetting, form]);
 
   // Reset form when editing starts
   React.useEffect(() => {
-    if (isEditing && serviceFeeSetting) {
+    if (isEditing && serviceFeeSetting && buyerServiceFeeSetting) {
       form.setValue("service_fee_percentage", serviceFeeSetting.value);
+      form.setValue("buyer_service_fee", buyerServiceFeeSetting.value);
     }
-  }, [isEditing, serviceFeeSetting, form]);
+  }, [isEditing, serviceFeeSetting, buyerServiceFeeSetting, form]);
 
   if (isLoading) {
     return (
@@ -188,6 +216,37 @@ export default function ServiceFeePage() {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="buyer_service_fee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Buyer Service Fee</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          {...field}
+                          type="number"
+                          step="100"
+                          min="0"
+                          disabled={!isEditing}
+                          className="w-32"
+                          placeholder="Enter amount"
+                        />
+                        <span className="text-sm text-muted-foreground">IDR</span>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                    <p className="text-sm text-muted-foreground">
+                      Current value: {buyerServiceFeeSetting?.value || "2000"} IDR
+                      <span className="ml-2">
+                        (Fixed amount charged to buyers on each order)
+                      </span>
+                    </p>
+                  </FormItem>
+                )}
+              />
+
               <div className="flex items-center gap-3">
                 {isEditing ? (
                   <>
@@ -217,6 +276,9 @@ export default function ServiceFeePage() {
                         if (serviceFeeSetting) {
                           form.setValue("service_fee_percentage", serviceFeeSetting.value);
                         }
+                        if (buyerServiceFeeSetting) {
+                          form.setValue("buyer_service_fee", buyerServiceFeeSetting.value);
+                        }
                         form.clearErrors();
                       }}
                     >
@@ -224,18 +286,18 @@ export default function ServiceFeePage() {
                     </Button>
                   </>
                 ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setIsEditing(true);
-                      }}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      Edit Service Fee
-                    </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsEditing(true);
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Edit Service Fee
+                  </Button>
                 )}
               </div>
             </form>

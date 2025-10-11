@@ -1,19 +1,27 @@
 import { NextRequest } from "next/server";
 import { db } from "@/db";
-import { order, orderItem, product, store, address, cart, cartItem } from "@/db/schema";
+import {
+  order,
+  orderItem,
+  product,
+  store,
+  address,
+  cart,
+  cartItem,
+} from "@/db/schema";
 import { eq, desc, and } from "drizzle-orm";
-import { 
-  withAuth, 
-  createErrorResponse, 
+import {
+  withAuth,
+  createErrorResponse,
   createSuccessResponse,
   validateRequestBody,
   validateQueryParams,
   generateId,
   calculateOffset,
-  createPaginationMeta
+  createPaginationMeta,
 } from "@/lib/api-utils";
 import { createOrderSchema, paginationSchema } from "@/lib/validations";
-import { calculateServiceFee } from "@/lib/config";
+import { calculateServiceFee, getBuyerServiceFee } from "@/lib/config";
 
 /**
  * GET /api/orders - Get user's orders with pagination
@@ -21,9 +29,12 @@ import { calculateServiceFee } from "@/lib/config";
 export async function GET(request: NextRequest) {
   return withAuth(request, async (req, user) => {
     const { searchParams } = new URL(req.url);
-    
+
     // Validate pagination params
-    const paginationResult = validateQueryParams(searchParams, paginationSchema);
+    const paginationResult = validateQueryParams(
+      searchParams,
+      paginationSchema
+    );
     if (paginationResult.error) {
       return createErrorResponse(paginationResult.error);
     }
@@ -44,6 +55,7 @@ export async function GET(request: NextRequest) {
           status: order.status,
           total: order.total,
           serviceFee: order.serviceFee,
+          buyerServiceFee: order.buyerServiceFee,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {
@@ -149,17 +161,24 @@ export async function POST(request: NextRequest) {
           .limit(1);
 
         if (productData.length === 0) {
-          return createErrorResponse(`Product ${item.productId} not found`, 404);
+          return createErrorResponse(
+            `Product ${item.productId} not found`,
+            404
+          );
         }
 
         const prod = productData[0];
 
         if (prod.status !== "active") {
-          return createErrorResponse(`Product ${item.productId} is not available`);
+          return createErrorResponse(
+            `Product ${item.productId} is not available`
+          );
         }
 
         if (prod.stock < item.quantity) {
-          return createErrorResponse(`Insufficient stock for product ${item.productId}`);
+          return createErrorResponse(
+            `Insufficient stock for product ${item.productId}`
+          );
         }
 
         const itemTotal = parseFloat(prod.price) * item.quantity;
@@ -176,6 +195,9 @@ export async function POST(request: NextRequest) {
       // Calculate service fee using database value
       const serviceFeeAmount = await calculateServiceFee(total);
 
+      // Calculate buyer service fee using database value
+      const buyerServiceFeeAmount = await getBuyerServiceFee();
+
       // Create order
       const newOrder = await db
         .insert(order)
@@ -186,6 +208,7 @@ export async function POST(request: NextRequest) {
           status: "pending",
           total: total.toFixed(2),
           serviceFee: serviceFeeAmount.toFixed(2),
+          buyerServiceFee: buyerServiceFeeAmount.toFixed(2),
           createdAt: new Date(),
           updatedAt: new Date(),
         })
@@ -232,15 +255,16 @@ export async function POST(request: NextRequest) {
         .limit(1);
 
       if (userCart.length > 0) {
-        await db
-          .delete(cartItem)
-          .where(eq(cartItem.cartId, userCart[0].id));
+        await db.delete(cartItem).where(eq(cartItem.cartId, userCart[0].id));
       }
 
-      return createSuccessResponse({
-        order: newOrder[0],
-        items: orderItems,
-      }, 201);
+      return createSuccessResponse(
+        {
+          order: newOrder[0],
+          items: orderItems,
+        },
+        201
+      );
     } catch (error) {
       console.error("Error creating order:", error);
       return createErrorResponse("Failed to create order", 500);

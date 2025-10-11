@@ -32,6 +32,7 @@ export async function GET(
           status: order.status,
           total: order.total,
           serviceFee: order.serviceFee,
+          buyerServiceFee: order.buyerServiceFee,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {

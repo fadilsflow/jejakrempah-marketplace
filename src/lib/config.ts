@@ -3,7 +3,7 @@
  * Centralized place for configurable values
  */
 
-import { getServiceFeePercentage } from "./system-settings";
+import { getServiceFeePercentage, getSystemSetting } from "./system-settings";
 
 /**
  * Service fee configuration
@@ -51,4 +51,47 @@ export function calculateServiceFeeSync(orderTotal: number): number {
  */
 export function calculateSellerEarningsSync(orderTotal: number): number {
   return orderTotal - calculateServiceFeeSync(orderTotal);
+}
+
+/**
+ * Get buyer service fee amount from database
+ * This is a fixed amount charged to buyers
+ * @returns The buyer service fee amount
+ */
+export async function getBuyerServiceFee(): Promise<number> {
+  const value = await getSystemSetting("buyer_service_fee");
+  
+  // If no value found, try to create default setting
+  if (!value) {
+    try {
+      const { db } = await import("@/db");
+      const { systemSettings } = await import("@/db/schema");
+      const { generateId } = await import("@/lib/api-utils");
+      
+      await db.insert(systemSettings).values({
+        id: generateId(),
+        key: "buyer_service_fee",
+        value: "2000",
+        description: "Fixed service fee amount charged to buyers",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      console.log("Created default buyer service fee setting");
+      return 2000; // Return default value
+    } catch (error) {
+      console.error("Error creating default buyer service fee setting:", error);
+      return 2000; // Fallback to default
+    }
+  }
+  
+  const amount = parseFloat(value);
+  return Math.max(0, amount); // Ensure it's not negative
+}
+
+/**
+ * Synchronous version for client-side calculations (uses fallback value)
+ * @returns The buyer service fee amount
+ */
+export function getBuyerServiceFeeSync(): number {
+  return 2000; // Fallback value
 }
