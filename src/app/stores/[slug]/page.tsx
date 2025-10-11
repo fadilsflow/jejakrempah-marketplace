@@ -47,9 +47,11 @@ type Product = {
   updatedAt: string;
 };
 
-type Area = {
+type Destination = {
   id: string;
   name: string;
+  latitude: number;
+  longitude: number;
 };
 
 export default function StoreDetailPage({
@@ -69,13 +71,13 @@ export default function StoreDetailPage({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
-  // Fetch areas data
-  const { data: areasData } = useQuery({
-    queryKey: ["areas"],
+  const { data: destinations } = useQuery({
+    queryKey: ["destinations"],
     queryFn: async () => {
-      const response = await fetch("/api/stores/areas");
-      if (!response.ok) throw new Error("Failed to fetch areas");
-      return response.json();
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const res = await fetch(baseUrl!);
+      if (!res.ok) throw new Error("Gagal memuat destinasi");
+      return res.json() as Promise<Destination[]>;
     },
   });
 
@@ -103,11 +105,9 @@ export default function StoreDetailPage({
   const store = storeData?.store;
   const products = storeData?.products || [];
   const pagination = storeData?.pagination;
-  const areas = areasData?.areas || [];
 
-  // Get area name from areaId
   const areaName = store?.areaId
-    ? areas.find((area: Area) => area.id === store.areaId)?.name
+    ? destinations?.find((dest) => dest.id === store.areaId)?.name
     : null;
 
   // Filter products by search term (client-side filtering)
@@ -209,6 +209,7 @@ export default function StoreDetailPage({
       </div>
     );
   }
+
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
     toast.success("Link Toko disalin ke clipboard!");
@@ -238,7 +239,7 @@ export default function StoreDetailPage({
       <div className="mb-8">
         <div className="flex flex-col md:flex-row gap-6 mb-6">
           {/* Store Logo */}
-          <div className="relative  flex-shrink-0 mx-auto md:mx-0">
+          <div className="relative flex-shrink-0 mx-auto md:mx-0">
             {store.logo ? (
               <Image
                 width={1000}
@@ -266,11 +267,16 @@ export default function StoreDetailPage({
             )}
 
             <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground flex-wrap">
-              {areaName && (
-                <div className="flex items-center">
+              {areaName && store.areaId && (
+                <a
+                  href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/blog/${store.areaId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center hover:text-primary transition-colors"
+                >
                   <MapPin className="h-4 w-4 mr-1" />
                   {areaName}
-                </div>
+                </a>
               )}
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1" />
@@ -377,7 +383,7 @@ export default function StoreDetailPage({
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-4">
                     <div className="flex gap-4">
-                      <div className=" relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg">
+                      <div className="relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg">
                         {product.image ? (
                           <Image
                             fill
