@@ -150,7 +150,7 @@ export default function SellerPayoutsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className=" space-y-6 mx-auto container px-6 md:px-12 py-4">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Payouts</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

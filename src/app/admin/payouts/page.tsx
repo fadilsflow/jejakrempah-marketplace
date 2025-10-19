@@ -121,7 +121,7 @@ export default function AdminPayoutsPage() {
     ) || [];
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className=" space-y-6 mx-auto container px-6 md:px-12 py-4">
       <h1 className="text-3xl font-bold">Manage Payouts</h1>
 
       <Card>
@@ -306,13 +306,13 @@ export default function AdminPayoutsPage() {
                       <TableCell>
                         {payout.processedAt
                           ? format(
-                              new Date(payout.processedAt),
-                              "MMM dd, yyyy HH:mm"
-                            )
+                            new Date(payout.processedAt),
+                            "MMM dd, yyyy HH:mm"
+                          )
                           : format(
-                              new Date(payout.createdAt),
-                              "MMM dd, yyyy HH:mm"
-                            )}
+                            new Date(payout.createdAt),
+                            "MMM dd, yyyy HH:mm"
+                          )}
                       </TableCell>
                       <TableCell>{payout.store?.name}</TableCell>
                       <TableCell className="font-medium">
