@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
-import { LayoutDashboard, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Users, Settings, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
@@ -21,6 +21,11 @@ const navigationItems = [
     name: "Service Fee",
     href: "/admin/service-fee",
     icon: Settings,
+  },
+  {
+    name: "Payouts",
+    href: "/admin/payouts",
+    icon: Wallet,
   },
 ];
 
