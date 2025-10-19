@@ -50,6 +50,13 @@
       "when": 1760165153059,
       "tag": "0005_hot_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760282042051,
+      "tag": "0007_tan_bruce_banner",
+      "breakpoints": true
     }
   ]
 }

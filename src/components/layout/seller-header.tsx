@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
-import { LayoutDashboard, Package, ShoppingBag } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
@@ -21,6 +21,11 @@ const navigationItems = [
     name: "Orderan",
     href: "/seller/orders",
     icon: ShoppingBag,
+  },
+  {
+    name: "Payouts",
+    href: "/seller/payouts",
+    icon: Wallet,
   },
 ];
 
