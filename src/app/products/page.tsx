@@ -1,57 +1,38 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Search, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import {
-  ProductCard,
-  ProductCardSkeleton,
-  Product,
-} from "@/components/product-card";
-import { formatCurrency } from "@/lib/client-utils";
+import { useState, useEffect } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { Search, SlidersHorizontal } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Label } from "@/components/ui/label"
+import { Slider } from "@/components/ui/slider"
+import { ProductCard, ProductCardSkeleton, type Product } from "@/components/product-card"
+import { formatCurrency } from "@/lib/client-utils"
 
 export default function ProductsPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt">(
-    "createdAt"
-  );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(1000000);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
+  const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt" | "sales">("createdAt")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+  const [minPrice, setMinPrice] = useState<number>(0)
+  const [maxPrice, setMaxPrice] = useState<number>(1000000)
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize] = useState(20)
 
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
+      setDebouncedSearchTerm(searchTerm)
+    }, 500)
 
     return () => {
-      clearTimeout(timer);
-    };
-  }, [searchTerm]);
+      clearTimeout(timer)
+    }
+  }, [searchTerm])
 
   // Fetch products
   const {
@@ -59,56 +40,46 @@ export default function ProductsPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: [
-      "products",
-      currentPage,
-      pageSize,
-      debouncedSearchTerm,
-      sortBy,
-      sortOrder,
-      minPrice,
-      maxPrice,
-    ],
+    queryKey: ["products", currentPage, pageSize, debouncedSearchTerm, sortBy, sortOrder, minPrice, maxPrice],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: pageSize.toString(),
         sortBy,
         sortOrder,
-      });
+      })
 
-      if (debouncedSearchTerm) params.append("q", debouncedSearchTerm);
-      if (minPrice > 0) params.append("minPrice", minPrice.toString());
-      if (maxPrice < 1000000) params.append("maxPrice", maxPrice.toString());
+      if (debouncedSearchTerm) params.append("q", debouncedSearchTerm)
+      if (minPrice > 0) params.append("minPrice", minPrice.toString())
+      if (maxPrice < 1000000) params.append("maxPrice", maxPrice.toString())
 
-      const response = await fetch(`/api/products?${params}`);
+      const response = await fetch(`/api/products?${params}`)
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to fetch products");
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to fetch products")
       }
-      return response.json();
+      return response.json()
     },
-  });
+  })
 
-  const products = productsData?.products || [];
-  const pagination = productsData?.pagination;
-
+  const products = productsData?.products || []
+  const pagination = productsData?.pagination
 
   const handlePriceFilter = () => {
-    setMinPrice(priceRange[0]);
-    setMaxPrice(priceRange[1]);
-    setCurrentPage(1);
-  };
+    setMinPrice(priceRange[0])
+    setMaxPrice(priceRange[1])
+    setCurrentPage(1)
+  }
 
   const resetFilters = () => {
-    setSearchTerm("");
-    setSortBy("createdAt");
-    setSortOrder("desc");
-    setMinPrice(0);
-    setMaxPrice(1000000);
-    setPriceRange([0, 1000000]);
-    setCurrentPage(1);
-  };
+    setSearchTerm("")
+    setSortBy("createdAt")
+    setSortOrder("desc")
+    setMinPrice(0)
+    setMaxPrice(1000000)
+    setPriceRange([0, 1000000])
+    setCurrentPage(1)
+  }
 
   return (
     <div className="container mx-auto py-8 px-6 md:px-12">
@@ -138,12 +109,7 @@ export default function ProductsPage() {
 
         {/* Sort */}
         <div className="flex gap-2">
-          <Select
-            value={sortBy}
-            onValueChange={(value: "name" | "price" | "createdAt") =>
-              setSortBy(value)
-            }
-          >
+          <Select value={sortBy} onValueChange={(value: "name" | "price" | "createdAt" | "sales") => setSortBy(value)}>
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>
@@ -151,13 +117,11 @@ export default function ProductsPage() {
               <SelectItem value="createdAt">Terbaru</SelectItem>
               <SelectItem value="name">Nama</SelectItem>
               <SelectItem value="price">Harga</SelectItem>
+              <SelectItem value="sales">Terlaris</SelectItem>
             </SelectContent>
           </Select>
 
-          <Select
-            value={sortOrder}
-            onValueChange={(value: "asc" | "desc") => setSortOrder(value)}
-          >
+          <Select value={sortOrder} onValueChange={(value: "asc" | "desc") => setSortOrder(value)}>
             <SelectTrigger className="w-[100px]">
               <SelectValue />
             </SelectTrigger>
@@ -177,9 +141,7 @@ export default function ProductsPage() {
             <SheetContent className="px-6">
               <SheetHeader>
                 <SheetTitle>Filter Produk</SheetTitle>
-                <SheetDescription>
-                  Sesuaikan pencarian produk Anda
-                </SheetDescription>
+                <SheetDescription>Sesuaikan pencarian produk Anda</SheetDescription>
               </SheetHeader>
               <div className="py-6 space-y-6">
                 {/* Price Range */}
@@ -188,9 +150,7 @@ export default function ProductsPage() {
                   <div className="px-2">
                     <Slider
                       value={priceRange}
-                      onValueChange={(value) =>
-                        setPriceRange(value as [number, number])
-                      }
+                      onValueChange={(value) => setPriceRange(value as [number, number])}
                       max={1000000}
                       min={0}
                       step={10000}
@@ -229,9 +189,7 @@ export default function ProductsPage() {
       {/* Error State */}
       {error && (
         <div className="text-center py-12">
-          <div className="text-red-500 mb-2">
-            {error instanceof Error ? error.message : "Terjadi kesalahan"}
-          </div>
+          <div className="text-red-500 mb-2">{error instanceof Error ? error.message : "Terjadi kesalahan"}</div>
           <Button onClick={() => window.location.reload()}>Coba Lagi</Button>
         </div>
       )}
@@ -261,21 +219,13 @@ export default function ProductsPage() {
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-center space-x-2 mt-8">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={!pagination.hasPrev}
-              >
+              <Button variant="outline" onClick={() => setCurrentPage(currentPage - 1)} disabled={!pagination.hasPrev}>
                 Sebelumnya
               </Button>
               <span className="text-sm text-muted-foreground">
                 Halaman {pagination.page} dari {pagination.totalPages}
               </span>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={!pagination.hasNext}
-              >
+              <Button variant="outline" onClick={() => setCurrentPage(currentPage + 1)} disabled={!pagination.hasNext}>
                 Selanjutnya
               </Button>
             </div>
@@ -283,5 +233,5 @@ export default function ProductsPage() {
         </>
       )}
     </div>
-  );
+  )
 }
