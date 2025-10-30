@@ -59,6 +59,7 @@ type Order = {
   total: string;
   serviceFee: string;
   buyerServiceFee: string;
+  shippingCost: string;
   createdAt: string;
   updatedAt: string;
   address: {
@@ -365,7 +366,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-lg">
-                        {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0"))}
+                        {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0") + parseFloat(order.shippingCost || "0"))}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {itemCount} item{itemCount > 1 ? "s" : ""}

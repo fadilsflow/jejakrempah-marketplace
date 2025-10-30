@@ -22,6 +22,7 @@ import {
 } from "@/lib/api-utils";
 import { createOrderSchema, paginationSchema } from "@/lib/validations";
 import { calculateServiceFee, getBuyerServiceFee } from "@/lib/config";
+import { getSystemSetting } from "@/lib/system-settings";
 
 /**
  * GET /api/orders - Get user's orders with pagination
@@ -56,6 +57,7 @@ export async function GET(request: NextRequest) {
           total: order.total,
           serviceFee: order.serviceFee,
           buyerServiceFee: order.buyerServiceFee,
+          shippingCost: order.shippingCost,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {
@@ -198,6 +200,10 @@ export async function POST(request: NextRequest) {
       // Calculate buyer service fee using database value
       const buyerServiceFeeAmount = await getBuyerServiceFee();
 
+      // Get shipping cost from system settings
+      const shippingCostValue = await getSystemSetting("shipping_cost");
+      const shippingCostAmount = shippingCostValue ? parseFloat(shippingCostValue) : 10000;
+
       // Create order
       const newOrder = await db
         .insert(order)
@@ -209,6 +215,7 @@ export async function POST(request: NextRequest) {
           total: total.toFixed(2),
           serviceFee: serviceFeeAmount.toFixed(2),
           buyerServiceFee: buyerServiceFeeAmount.toFixed(2),
+          shippingCost: shippingCostAmount.toFixed(2),
           createdAt: new Date(),
           updatedAt: new Date(),
         })

@@ -438,11 +438,15 @@ export default function OrderDetailPage({
                   <span>Service Fee:</span>
                   <span>{formatCurrency(parseFloat(order.buyerServiceFee || "0"))}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>Shipping Cost:</span>
+                  <span>{formatCurrency(parseFloat(order.shippingCost || "0"))}</span>
+                </div>
                 <div className="border-t pt-2">
                   <div className="flex justify-between font-bold">
                     <span>Total:</span>
                     <span className="text-primary">
-                      {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0"))}
+                      {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0") + parseFloat(order.shippingCost || "0"))}
                     </span>
                   </div>
                 </div>

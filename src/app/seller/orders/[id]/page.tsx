@@ -420,11 +420,15 @@ export default function SellerOrderDetailPage({
                 <div className="text-xs text-muted-foreground pt-2 border-t">
                   <div className="flex justify-between">
                     <span>Customer paid total:</span>
-                    <span>{formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0"))}</span>
+                    <span>{formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0") + parseFloat(order.shippingCost || "0"))}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Including buyer service fee:</span>
                     <span>{formatCurrency(parseFloat(order.buyerServiceFee || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Including shipping cost:</span>
+                    <span>{formatCurrency(parseFloat(order.shippingCost || "0"))}</span>
                   </div>
                 </div>
               </div>

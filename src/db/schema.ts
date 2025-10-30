@@ -167,6 +167,7 @@ export const order = pgTable("order", {
   total: numeric("total", { precision: 10, scale: 2 }).notNull(),
   serviceFee: numeric("service_fee", { precision: 10, scale: 2 }).notNull().default("0.00"),
   buyerServiceFee: numeric("buyer_service_fee", { precision: 10, scale: 2 }).notNull().default("0.00"),
+  shippingCost: numeric("shipping_cost", { precision: 10, scale: 2 }).notNull().default("0.00"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

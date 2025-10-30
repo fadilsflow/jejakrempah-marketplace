@@ -71,6 +71,7 @@ type Order = {
   total: string;
   serviceFee: string;
   buyerServiceFee: string;
+  shippingCost: string;
   sellerTotal: string;
   createdAt: string;
   updatedAt: string;
@@ -474,7 +475,7 @@ export default function SellerOrdersPage() {
                           Your share (after {formatCurrency(parseFloat(order.serviceFee || "0"))} fee)
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Customer paid: {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0"))}
+                          Customer paid: {formatCurrency(parseFloat(order.total || "0") + parseFloat(order.buyerServiceFee || "0") + parseFloat(order.shippingCost || "0"))}
                         </div>
                       </div>
                     </TableCell>

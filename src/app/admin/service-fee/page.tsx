@@ -38,6 +38,14 @@ const serviceFeeSchema = z.object({
       const num = parseFloat(val);
       return num >= 0;
     }, "Amount must be 0 or greater"),
+  shipping_cost: z
+    .string()
+    .min(1, "Shipping cost is required")
+    .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount format")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return num >= 0;
+    }, "Amount must be 0 or greater"),
 });
 
 type ServiceFeeForm = z.infer<typeof serviceFeeSchema>;
@@ -60,6 +68,7 @@ export default function ServiceFeePage() {
     defaultValues: {
       service_fee_percentage: "5",
       buyer_service_fee: "2000",
+      shipping_cost: "10000",
     },
   });
 
@@ -78,7 +87,7 @@ export default function ServiceFeePage() {
   // Update setting mutation
   const updateSettingMutation = useMutation({
     mutationFn: async (data: ServiceFeeForm) => {
-      // Update both settings
+      // Update all settings
       const responses = await Promise.all([
         fetch("/api/admin/settings", {
           method: "PUT",
@@ -94,6 +103,14 @@ export default function ServiceFeePage() {
           body: JSON.stringify({
             key: "buyer_service_fee",
             value: data.buyer_service_fee,
+          }),
+        }),
+        fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key: "shipping_cost",
+            value: data.shipping_cost,
           }),
         }),
       ]);
@@ -131,6 +148,7 @@ export default function ServiceFeePage() {
   const settings: SystemSetting[] = settingsData?.settings || [];
   const serviceFeeSetting = settings.find(s => s.key === "service_fee_percentage");
   const buyerServiceFeeSetting = settings.find(s => s.key === "buyer_service_fee");
+  const shippingCostSetting = settings.find(s => s.key === "shipping_cost");
 
   // Set form value when data loads
   React.useEffect(() => {
@@ -140,15 +158,19 @@ export default function ServiceFeePage() {
     if (buyerServiceFeeSetting) {
       form.setValue("buyer_service_fee", buyerServiceFeeSetting.value);
     }
-  }, [serviceFeeSetting, buyerServiceFeeSetting, form]);
+    if (shippingCostSetting) {
+      form.setValue("shipping_cost", shippingCostSetting.value);
+    }
+  }, [serviceFeeSetting, buyerServiceFeeSetting, shippingCostSetting, form]);
 
   // Reset form when editing starts
   React.useEffect(() => {
-    if (isEditing && serviceFeeSetting && buyerServiceFeeSetting) {
+    if (isEditing && serviceFeeSetting && buyerServiceFeeSetting && shippingCostSetting) {
       form.setValue("service_fee_percentage", serviceFeeSetting.value);
       form.setValue("buyer_service_fee", buyerServiceFeeSetting.value);
+      form.setValue("shipping_cost", shippingCostSetting.value);
     }
-  }, [isEditing, serviceFeeSetting, buyerServiceFeeSetting, form]);
+  }, [isEditing, serviceFeeSetting, buyerServiceFeeSetting, shippingCostSetting, form]);
 
   if (isLoading) {
     return (
@@ -247,6 +269,37 @@ export default function ServiceFeePage() {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="shipping_cost"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Default Shipping Cost</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          {...field}
+                          type="number"
+                          step="1000"
+                          min="0"
+                          disabled={!isEditing}
+                          className="w-32"
+                          placeholder="Enter amount"
+                        />
+                        <span className="text-sm text-muted-foreground">IDR</span>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                    <p className="text-sm text-muted-foreground">
+                      Current value: {shippingCostSetting?.value || "10000"} IDR
+                      <span className="ml-2">
+                        (Default shipping cost applied to all orders)
+                      </span>
+                    </p>
+                  </FormItem>
+                )}
+              />
+
               <div className="flex items-center gap-3">
                 {isEditing ? (
                   <>
@@ -278,6 +331,9 @@ export default function ServiceFeePage() {
                         }
                         if (buyerServiceFeeSetting) {
                           form.setValue("buyer_service_fee", buyerServiceFeeSetting.value);
+                        }
+                        if (shippingCostSetting) {
+                          form.setValue("shipping_cost", shippingCostSetting.value);
                         }
                         form.clearErrors();
                       }}

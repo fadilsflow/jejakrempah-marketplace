@@ -103,6 +103,21 @@ export default function CheckoutPage() {
     enabled: !!session?.user,
   });
 
+  // Fetch shipping cost
+  const {
+    data: shippingCostData,
+  } = useQuery({
+    queryKey: ["shipping-cost"],
+    queryFn: async () => {
+      const response = await fetch("/api/shipping-cost");
+      if (!response.ok) {
+        throw new Error("Failed to fetch shipping cost");
+      }
+      return response.json();
+    },
+    enabled: !!session?.user,
+  });
+
   // Create order mutation
   // Create order mutation
   const createOrderMutation = useMutation({
@@ -205,8 +220,9 @@ export default function CheckoutPage() {
   const addresses = addressesData?.addresses || [];
   const defaultAddress = addresses.find((addr: Address) => addr.isDefault);
 
-  // Get buyer service fee
+  // Get buyer service fee and shipping cost
   const buyerServiceFee = buyerServiceFeeData?.buyerServiceFee || getBuyerServiceFeeSync();
+  const shippingCost = shippingCostData?.shippingCost || 10000; // Default 10000 IDR
 
   // Set default address if available and not already set
   React.useEffect(() => {
@@ -503,7 +519,7 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Place Order • {formatCurrency(parseFloat(cart.total) + buyerServiceFee)}
+                        Place Order • {formatCurrency(parseFloat(cart.total) + buyerServiceFee + shippingCost)}
                       </>
                     )}
                   </Button>
@@ -573,10 +589,16 @@ export default function CheckoutPage() {
                     {formatCurrency(buyerServiceFee)}
                   </span>
                 </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Shipping Cost:</span>
+                  <span className="text-sm">
+                    {formatCurrency(shippingCost)}
+                  </span>
+                </div>
                 <div className="flex justify-between items-center border-t pt-2">
                   <span className="font-semibold">Total:</span>
                   <span className="font-bold text-lg text-primary">
-                    {formatCurrency(parseFloat(cart.total) + buyerServiceFee)}
+                    {formatCurrency(parseFloat(cart.total) + buyerServiceFee + shippingCost)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">

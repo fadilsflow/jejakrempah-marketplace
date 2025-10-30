@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
           status: order.status,
           total: order.total,
           buyerServiceFee: order.buyerServiceFee,
+          shippingCost: order.shippingCost,
         })
         .from(order)
         .where(and(eq(order.id, orderId), eq(order.buyerId, user.id)))
@@ -94,10 +95,11 @@ export async function POST(request: NextRequest) {
       }
 
       // Call Midtrans Snap API
-      // Include buyer service fee in the total amount sent to Midtrans
+      // Include buyer service fee and shipping cost in the total amount sent to Midtrans
       const grossAmount = Math.round(
         parseFloat(orderData[0].total) +
-          parseFloat(orderData[0].buyerServiceFee)
+          parseFloat(orderData[0].buyerServiceFee) +
+          parseFloat(orderData[0].shippingCost || "0")
       );
 
       // Generate unique order_id for Midtrans (add timestamp to make it unique)
@@ -139,10 +141,16 @@ export async function POST(request: NextRequest) {
                 quantity: 1,
                 name: `Service Fee`,
               },
+              {
+                id: `${orderId}_shipping`,
+                price: Math.round(parseFloat(orderData[0].shippingCost || "0")),
+                quantity: 1,
+                name: `Shipping Cost`,
+              },
             ],
             callbacks: {
               finish: `${
-                process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+                process.env.BETTER_AUTH_URL || "http://localhost:3000"
               }/orders/${orderId}`,
             },
           }),

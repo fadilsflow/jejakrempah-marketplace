@@ -65,6 +65,8 @@ export async function GET(request: NextRequest) {
           status: order.status,
           total: order.total,
           serviceFee: order.serviceFee,
+          buyerServiceFee: order.buyerServiceFee,
+          shippingCost: order.shippingCost,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           address: {
@@ -87,6 +89,9 @@ export async function GET(request: NextRequest) {
           order.buyerId,
           order.status,
           order.total,
+          order.serviceFee,
+          order.buyerServiceFee,
+          order.shippingCost,
           order.createdAt,
           order.updatedAt,
           address.id,
