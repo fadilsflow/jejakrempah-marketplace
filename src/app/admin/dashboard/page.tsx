@@ -57,14 +57,20 @@ export default function SuperAdminDashboard() {
 
   const users = usersData?.users || [];
   const settings = settingsData?.settings || [];
-  const serviceFeeSetting = settings.find((s: SystemSetting) => s.key === "service_fee_percentage");
-  const buyerServiceFeeSetting = settings.find((s: SystemSetting) => s.key === "buyer_service_fee");
-  const shippingCostSetting = settings.find((s: SystemSetting) => s.key === "shipping_cost");
+  const serviceFeeSetting = settings.find(
+    (s: SystemSetting) => s.key === "service_fee_percentage",
+  );
+  const buyerServiceFeeSetting = settings.find(
+    (s: SystemSetting) => s.key === "buyer_service_fee",
+  );
+  const shippingCostSetting = settings.find(
+    (s: SystemSetting) => s.key === "shipping_cost",
+  );
 
   // Calculate stats
   const totalUsers = users.length;
-  const adminUsers = users.filter(user => user.role === "admin").length;
-  const regularUsers = users.filter(user => user.role === "user").length;
+  const adminUsers = users.filter((user) => user.role === "admin").length;
+  const regularUsers = users.filter((user) => user.role === "user").length;
   const serviceFeePercentage = serviceFeeSetting?.value || "5";
   const buyerServiceFee = buyerServiceFeeSetting?.value || "2000";
   const shippingCost = shippingCostSetting?.value || "10000";
@@ -74,7 +80,7 @@ export default function SuperAdminDashboard() {
       <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="space-y-6">
           <Skeleton className="h-8 w-64" />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <Skeleton key={i} className="h-32" />
             ))}
@@ -150,14 +156,16 @@ export default function SuperAdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Buyer Service Fee</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Buyer Service Fee
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(parseFloat(buyerServiceFee))}</div>
-            <p className="text-xs text-muted-foreground">
-              Fixed fee per order
-            </p>
+            <div className="text-2xl font-bold">
+              {formatCurrency(parseFloat(buyerServiceFee))}
+            </div>
+            <p className="text-xs text-muted-foreground">Fixed fee per order</p>
           </CardContent>
         </Card>
 
@@ -167,7 +175,9 @@ export default function SuperAdminDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(parseFloat(shippingCost))}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(parseFloat(shippingCost))}
+            </div>
             <p className="text-xs text-muted-foreground">
               Default shipping cost
             </p>
