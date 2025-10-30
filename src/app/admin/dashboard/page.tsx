@@ -8,6 +8,7 @@ import { Users, Settings, BarChart3, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/client-utils";
 
 type User = {
   id: string;
@@ -57,20 +58,24 @@ export default function SuperAdminDashboard() {
   const users = usersData?.users || [];
   const settings = settingsData?.settings || [];
   const serviceFeeSetting = settings.find((s: SystemSetting) => s.key === "service_fee_percentage");
+  const buyerServiceFeeSetting = settings.find((s: SystemSetting) => s.key === "buyer_service_fee");
+  const shippingCostSetting = settings.find((s: SystemSetting) => s.key === "shipping_cost");
 
   // Calculate stats
   const totalUsers = users.length;
   const adminUsers = users.filter(user => user.role === "admin").length;
   const regularUsers = users.filter(user => user.role === "user").length;
   const serviceFeePercentage = serviceFeeSetting?.value || "5";
+  const buyerServiceFee = buyerServiceFeeSetting?.value || "2000";
+  const shippingCost = shippingCostSetting?.value || "10000";
 
   if (usersLoading || settingsLoading) {
     return (
       <div className="container mx-auto py-8 px-6 md:px-12">
         <div className="space-y-6">
           <Skeleton className="h-8 w-64" />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {[...Array(6)].map((_, i) => (
               <Skeleton key={i} className="h-32" />
             ))}
           </div>
@@ -90,7 +95,7 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -142,6 +147,32 @@ export default function SuperAdminDashboard() {
             </p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Buyer Service Fee</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(parseFloat(buyerServiceFee))}</div>
+            <p className="text-xs text-muted-foreground">
+              Fixed fee per order
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Shipping Cost</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(parseFloat(shippingCost))}</div>
+            <p className="text-xs text-muted-foreground">
+              Default shipping cost
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
@@ -170,17 +201,17 @@ export default function SuperAdminDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              Service Fee Configuration
+              Fee Configuration
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Configure system service fee percentage
+              Configure service fees, buyer fees, and shipping costs
             </p>
-            <Link href="/superadmin/service-fee">
+            <Link href="/admin/service-fee">
               <Button className="w-full">
                 <Settings className="mr-2 h-4 w-4" />
-                Configure Service Fee
+                Configure Fees
               </Button>
             </Link>
           </CardContent>
