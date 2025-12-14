@@ -94,7 +94,7 @@ export default function SuperAdminDashboard() {
     <div className="container mx-auto py-8 px-6 md:px-12">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <p className="text-muted-foreground">
           Overview of system status and management tools
         </p>
@@ -198,7 +198,7 @@ export default function SuperAdminDashboard() {
             <p className="text-sm text-muted-foreground mb-4">
               Manage user accounts, roles, and permissions
             </p>
-            <Link href="/superadmin/manage-users">
+            <Link href="/admin/manage-users">
               <Button className="w-full">
                 <Users className="mr-2 h-4 w-4" />
                 Manage Users
