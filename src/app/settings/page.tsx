@@ -96,7 +96,7 @@ export default function SettingsPage() {
     defaultValues: {
       name: "",
       slug: "",
-      areaId: '',
+      areaId: "",
       description: "",
       logo: "",
     },
@@ -146,7 +146,7 @@ export default function SettingsPage() {
       storeForm.reset({
         name: store.name,
         slug: store.slug,
-        areaId: store.areaId ?? '',
+        areaId: store.areaId ?? "",
         description: store.description || "",
         logo: store.logo || "",
       });

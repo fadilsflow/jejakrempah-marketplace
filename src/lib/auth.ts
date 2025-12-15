@@ -1,4 +1,5 @@
 import { authSchema, db } from "@/db";
+import { sendVerificationEmail, sendPasswordResetEmail } from "./email";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -10,7 +11,24 @@ export const auth = betterAuth({
     schema: authSchema,
   }),
   emailAndPassword: {
-    enabled: false,
+    enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendPasswordResetEmail({
+        to: user.email,
+        name: user.name,
+        url,
+      });
+    },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail({
+        to: user.email,
+        name: user.name,
+        url,
+      });
+    },
   },
   user: {
     deleteUser: {
@@ -24,13 +42,13 @@ export const auth = betterAuth({
     },
   },
   cookies: {
-    prefix: "ba_", // match this with client
+    prefix: "ba_",
   },
-  plugins: [ 
-    nextCookies(), 
+  plugins: [
+    nextCookies(),
     admin({
       defaultRole: "user",
       adminRoles: ["admin"],
-    })
+    }),
   ],
 });
