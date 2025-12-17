@@ -94,7 +94,9 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
               <LogoIcon className="w-6 h-6 " />
-              <span className="font-bold text-primary text-2xl hidden md:block">JRM</span>
+              <span className="font-bold text-primary text-2xl hidden md:block">
+                Marketplace
+              </span>
             </Link>
           </div>
 
@@ -126,7 +128,7 @@ export function Header() {
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() =>
                         router.push(
-                          `/stores?q=${encodeURIComponent(debouncedQuery)}`
+                          `/stores?q=${encodeURIComponent(debouncedQuery)}`,
                         )
                       }
                     >
