@@ -1,10 +1,11 @@
 function createUsabilityForm() {
   // 1. Create the form
-  var form = FormApp.create(
-    "Instrumen Evaluasi Usability Lengkap - Jejak Rempah & Marketplace"
-  );
+  var formId = "1jb33hJ3QLCfioJp9RZnKApkj8pItFzttG13Z_Yt_8Ls";
+  var form = FormApp.openById(formId);
+  deleteAllItems(form);
+
   form.setDescription(
-    "Formulir ini mencakup evaluasi usability untuk berbagai role di platform Jejak Rempah dan Marketplace Jejak Rempah. Silakan pilih kategori evaluasi yang sesuai di halaman pertama."
+    "Formulir ini mencakup evaluasi usability untuk berbagai role di platform Rempahtour dan Marketplace Rempahtour. Silakan pilih kategori evaluasi yang sesuai di halaman pertama."
   );
 
   // 2. Add the Branching Logic (Role Selection)
@@ -18,19 +19,19 @@ function createUsabilityForm() {
     .setRequired(true);
 
   // ==========================================================================================
-  // SECTION 1: Jejak Rempah User
-  // Source: JEJAK-REMPAH-INSTRUMEN-EVALUASI-USABILITY-USER.md
+  // SECTION 1: Rempahtour User
+  // Source: REMPAHTOUR-INSTRUMEN-EVALUASI-USABILITY-USER.md
   // ==========================================================================================
   var pageUserJR = form
     .addPageBreakItem()
-    .setTitle("Jejak Rempah - User (Pengunjung Umum)");
+    .setTitle("Rempahtour - User (Pengunjung Umum)");
 
   // Intro
   form
     .addSectionHeaderItem()
     .setTitle("BAGIAN 1: Pendahuluan")
     .setHelpText(
-      "Instruksi: Terima kasih telah bersedia meluangkan waktu. Kami sedang mengembangkan website JejakRempah.com. Mohon diingat bahwa kami sedang menguji sistem/website, bukan kemampuan Anda."
+      "Instruksi: Terima kasih telah bersedia meluangkan waktu. Kami sedang mengembangkan website Rempahtour.com. Mohon diingat bahwa kami sedang menguji sistem/website, bukan kemampuan Anda."
     );
 
   // Profile
@@ -97,11 +98,27 @@ function createUsabilityForm() {
     .setLabels("Sangat Tidak Jelas", "Sangat Jelas")
     .setRequired(true);
 
+  // Task D
+  form
+    .addSectionHeaderItem()
+    .setTitle("TUGAS D: Pengajuan Pemasangan Iklan")
+    .setHelpText(
+      "Instruksi:\n1. Lakukan Login/Register.\n2. Cari menu Ads Submission.\n3. Buat pengajuan baru dengan klik tombol New Ads Submission\n4. isi form dengan informasi yang dibutuhkan dan klik Submit"
+    );
+  form
+    .addScaleItem()
+    .setTitle(
+      "Pertanyaan D: Seberapa JELAS alur pengajuan pemasangan iklan tersebut?"
+    )
+    .setBounds(1, 7)
+    .setLabels("Sangat Tidak Jelas", "Sangat Jelas")
+    .setRequired(true);
+
   // SUS
-  addSusGrid(form, "Jejak Rempah User", [
-    "Saya berpikir akan menggunakan website JejakRempah ini lagi.",
-    "Saya merasa website JejakRempah ini rumit untuk digunakan.",
-    "Saya merasa website JejakRempah ini mudah digunakan.",
+  addSusGrid(form, "Rempahtour User", [
+    "Saya berpikir akan menggunakan website Rempahtour ini lagi.",
+    "Saya merasa website Rempahtour ini rumit untuk digunakan.",
+    "Saya merasa website Rempahtour ini mudah digunakan.",
     "Saya membutuhkan bantuan dari orang teknis untuk bisa menggunakan website ini.",
     "Saya merasa fitur-fitur pada website ini berjalan dengan semestinya (terintegrasi dengan baik).",
     "Saya merasa ada banyak hal yang tidak konsisten (tidak nyambung) pada website ini.",
@@ -128,17 +145,15 @@ function createUsabilityForm() {
 
   form
     .addParagraphTextItem()
-    .setTitle(
-      "Apa saran atau kritik Anda untuk perbaikan website JejakRempah?"
-    );
+    .setTitle("Apa saran atau kritik Anda untuk perbaikan website Rempahtour?");
 
   pageUserJR.setGoToPage(FormApp.PageNavigationType.SUBMIT); // End form after this section
 
   // ==========================================================================================
-  // SECTION 2: Jejak Rempah Admin
-  // Source: JEJAK-REMPAH-INSTRUMEN-EVALUASI-USABILITY-ADMIN.md
+  // SECTION 2: Rempahtour Admin
+  // Source: REMPAHTOUR-INSTRUMEN-EVALUASI-USABILITY-ADMIN.md
   // ==========================================================================================
-  var pageAdminJR = form.addPageBreakItem().setTitle("Jejak Rempah - Admin");
+  var pageAdminJR = form.addPageBreakItem().setTitle("Rempahtour - Admin");
 
   // Intro
   form
@@ -166,7 +181,7 @@ function createUsabilityForm() {
     .addSectionHeaderItem()
     .setTitle("TUGAS A: Manajemen Destinasi")
     .setHelpText(
-      "Instruksi:\n1. Buka menu Destinations.\n2. Tambah Destinasi Baru (simpan).\n3. Cari dan Edit destinasi tersebut (simpan)."
+      "Instruksi:\n1. download file virtual tour https://drive.usercontent.google.com/u/0/uc?id=1RAvtZ1WfLemEA5ihkNfetlkNUByKs0yS&export=download\n2. Buka menu Destinations.\n3. Buat Destinasi Baru dengan ketentuan berikut:\n   - Destination Name memakai format SUS_TEST_NAMA (pakai nama panggilan / julukan maks 1 kata)\n   - Longitude & Latitude memakai angka seperti berikut 109.13656740 (koma pakai titik)\n   - Description diisi yang bagus karena akan jadi blog\n   - Thumbnail berupa file gambar dengan size dibawah 2MB\n   - Pano2vr berupa file hasil download pada instruksi ke-1\n4. Cari dan Edit destinasi tersebut tanpa upload Thumbnail/Pano2vr lalu simpan."
     );
   form
     .addScaleItem()
@@ -210,7 +225,7 @@ function createUsabilityForm() {
     .setRequired(true);
 
   // SUS
-  addSusGrid(form, "Jejak Rempah Admin", [
+  addSusGrid(form, "Rempahtour Admin", [
     "Saya berpikir akan sering menggunakan Dashboard Admin ini (dalam konteks pekerjaan).",
     "Saya merasa Dashboard Admin ini rumit untuk digunakan.",
     "Saya merasa Dashboard Admin ini mudah digunakan.",
@@ -251,7 +266,7 @@ function createUsabilityForm() {
 
   // ==========================================================================================
   // SECTION 3: Marketplace User
-  // Source: JEJAK-REMPAH-MARKETPLACE-INSTRUMEN-EVALUASI-USABILITY-USER.md
+  // Source: REMPAHTOUR-MARKETPLACE-INSTRUMEN-EVALUASI-USABILITY-USER.md
   // ==========================================================================================
   var pageUserMP = form
     .addPageBreakItem()
@@ -262,7 +277,7 @@ function createUsabilityForm() {
     .addSectionHeaderItem()
     .setTitle("BAGIAN 1: Pendahuluan")
     .setHelpText(
-      "Instruksi: Terima kasih telah bersedia berpartisipasi. Kami membutuhkan masukan Anda sebagai pengguna Marketplace Jejak Rempah."
+      "Instruksi: Terima kasih telah bersedia berpartisipasi. Kami membutuhkan masukan Anda sebagai pengguna Marketplace Rempahtour."
     );
 
   // Profile
@@ -329,16 +344,16 @@ function createUsabilityForm() {
 
   // SUS
   addSusGrid(form, "Marketplace User", [
-    "Saya berpikir akan sering menggunakan Marketplace Jejak Rempah ini.",
-    "Saya merasa Marketplace Jejak Rempah ini terlalu rumit untuk digunakan.",
-    "Saya merasa Marketplace Jejak Rempah ini mudah digunakan.",
-    "Saya membutuhkan bantuan dari orang yang lebih teknis untuk dapat menggunakan Marketplace Jejak Rempah ini.",
-    "Saya merasa fitur-fitur di Marketplace Jejak Rempah terintegrasi dengan baik.",
-    "Saya merasa terdapat banyak hal yang tidak konsisten pada Marketplace Jejak Rempah.",
-    "Saya merasa kebanyakan orang akan dapat mempelajari cara menggunakan Marketplace Jejak Rempah dengan cepat.",
-    "Saya merasa Marketplace Jejak Rempah ini membingungkan untuk digunakan.",
-    "Saya merasa tidak ada hambatan berarti dalam menggunakan Marketplace Jejak Rempah.",
-    "Saya perlu membiasakan diri terlebih dahulu sebelum dapat menggunakan Marketplace Jejak Rempah dengan baik.",
+    "Saya berpikir akan sering menggunakan Marketplace Rempahtour ini.",
+    "Saya merasa Marketplace Rempahtour ini terlalu rumit untuk digunakan.",
+    "Saya merasa Marketplace Rempahtour ini mudah digunakan.",
+    "Saya membutuhkan bantuan dari orang yang lebih teknis untuk dapat menggunakan Marketplace Rempahtour ini.",
+    "Saya merasa fitur-fitur di Marketplace Rempahtour terintegrasi dengan baik.",
+    "Saya merasa terdapat banyak hal yang tidak konsisten pada Marketplace Rempahtour.",
+    "Saya merasa kebanyakan orang akan dapat mempelajari cara menggunakan Marketplace Rempahtour dengan cepat.",
+    "Saya merasa Marketplace Rempahtour ini membingungkan untuk digunakan.",
+    "Saya merasa tidak ada hambatan berarti dalam menggunakan Marketplace Rempahtour.",
+    "Saya perlu membiasakan diri terlebih dahulu sebelum dapat menggunakan Marketplace Rempahtour dengan baik.",
   ]);
 
   // Feedback
@@ -358,13 +373,13 @@ function createUsabilityForm() {
 
   form
     .addParagraphTextItem()
-    .setTitle("Saran atau kritik untuk perbaikan Marketplace Jejak Rempah:");
+    .setTitle("Saran atau kritik untuk perbaikan Marketplace Rempahtour:");
 
   pageUserMP.setGoToPage(FormApp.PageNavigationType.SUBMIT);
 
   // ==========================================================================================
   // SECTION 4: Marketplace Seller
-  // Source: JEJAK-REMPAH-MARKETPLACE-INSTRUMEN-EVALUASI-USABILITY-SELLER.md
+  // Source: REMPAHTOUR-MARKETPLACE-INSTRUMEN-EVALUASI-USABILITY-SELLER.md
   // ==========================================================================================
   var pageSellerMP = form
     .addPageBreakItem()
@@ -375,7 +390,7 @@ function createUsabilityForm() {
     .addSectionHeaderItem()
     .setTitle("BAGIAN 1: Pendahuluan")
     .setHelpText(
-      "Instruksi: Evaluasi ini bertujuan menilai kemudahan penggunaan Panel Seller Marketplace Jejak Rempah."
+      "Instruksi: Evaluasi ini bertujuan menilai kemudahan penggunaan Panel Seller Marketplace Rempahtour."
     );
 
   // Profile
@@ -443,9 +458,9 @@ function createUsabilityForm() {
 
   // SUS
   addSusGrid(form, "Marketplace Seller", [
-    "Saya berpikir akan sering menggunakan panel seller Marketplace Jejak Rempah ini.",
+    "Saya berpikir akan sering menggunakan panel seller Marketplace Rempahtour ini.",
     "Saya merasa panel seller ini terlalu rumit untuk digunakan.",
-    "Saya merasa panel seller Marketplace Jejak Rempah ini mudah digunakan.",
+    "Saya merasa panel seller Marketplace Rempahtour ini mudah digunakan.",
     "Saya membutuhkan bantuan dari orang teknis untuk dapat menggunakan panel seller ini.",
     "Saya merasa fitur-fitur pada panel seller ini terintegrasi dengan baik.",
     "Saya merasa terdapat banyak hal yang tidak konsisten pada panel seller ini.",
@@ -473,14 +488,14 @@ function createUsabilityForm() {
   form
     .addParagraphTextItem()
     .setTitle(
-      "Saran atau kritik untuk peningkatan Panel Seller Marketplace Jejak Rempah:"
+      "Saran atau kritik untuk peningkatan Panel Seller Marketplace Rempahtour:"
     );
 
   pageSellerMP.setGoToPage(FormApp.PageNavigationType.SUBMIT);
 
   // ==========================================================================================
   // SECTION 5: Marketplace Admin
-  // Source: JEJAK-REMPAH-MARKETPLACE-INSTRUMEN-EVALUASI-USABILITY-ADMIN.md
+  // Source: REMPAHTOUR-MARKETPLACE-INSTRUMEN-EVALUASI-USABILITY-ADMIN.md
   // ==========================================================================================
   var pageAdminMP = form.addPageBreakItem().setTitle("Marketplace - Admin");
 
@@ -559,9 +574,9 @@ function createUsabilityForm() {
 
   // SUS
   addSusGrid(form, "Marketplace Admin", [
-    "Saya berpikir akan sering menggunakan panel admin Marketplace Jejak Rempah ini.",
+    "Saya berpikir akan sering menggunakan panel admin Marketplace Rempahtour ini.",
     "Saya merasa panel admin ini terlalu rumit untuk digunakan.",
-    "Saya merasa panel admin Marketplace Jejak Rempah ini mudah digunakan.",
+    "Saya merasa panel admin Marketplace Rempahtour ini mudah digunakan.",
     "Saya membutuhkan bantuan dari orang teknis untuk dapat menggunakan panel admin ini.",
     "Saya merasa fitur-fitur pada panel admin ini terintegrasi dengan baik.",
     "Saya merasa terdapat banyak hal yang tidak konsisten pada panel admin ini.",
@@ -590,7 +605,7 @@ function createUsabilityForm() {
   form
     .addParagraphTextItem()
     .setTitle(
-      "Saran atau kritik untuk peningkatan Panel Admin Marketplace Jejak Rempah:"
+      "Saran atau kritik untuk peningkatan Panel Admin Marketplace Rempahtour:"
     );
 
   pageAdminMP.setGoToPage(FormApp.PageNavigationType.SUBMIT);
@@ -599,11 +614,11 @@ function createUsabilityForm() {
   // FINALIZE: Set Options for Role Selection
   // ==========================================================================================
   roleSelect.setChoices([
-    roleSelect.createChoice("Jejak Rempah User", pageUserJR),
-    roleSelect.createChoice("Jejak Rempah Admin", pageAdminJR),
-    roleSelect.createChoice("Jejak Rempah Marketplace User", pageUserMP),
-    roleSelect.createChoice("Jejak Rempah Marketplace Seller", pageSellerMP),
-    roleSelect.createChoice("Jejak Rempah Marketplace Admin", pageAdminMP),
+    roleSelect.createChoice("Rempahtour User", pageUserJR),
+    roleSelect.createChoice("Rempahtour Admin", pageAdminJR),
+    roleSelect.createChoice("Rempahtour Marketplace User", pageUserMP),
+    roleSelect.createChoice("Rempahtour Marketplace Seller", pageSellerMP),
+    roleSelect.createChoice("Rempahtour Marketplace Admin", pageAdminMP),
   ]);
 }
 
@@ -634,4 +649,14 @@ function addSusGrid(form, context, questions) {
       "5 (Sangat Setuju)",
     ])
     .setRequired(true);
+}
+
+/**
+ * Helper to delete all items in the form
+ */
+function deleteAllItems(form) {
+  var items = form.getItems();
+  for (var i = 0; i < items.length; i++) {
+    form.deleteItem(items[i]);
+  }
 }
